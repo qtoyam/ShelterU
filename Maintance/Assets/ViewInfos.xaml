@@ -1,0 +1,14 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+					xmlns:m="clr-namespace:Maintance.Models"
+					xmlns:vm="clr-namespace:Maintance.ViewModels">
+	<ResourceDictionary.MergedDictionaries>
+		<ResourceDictionary Source="ViewIcons.xaml"/>
+	</ResourceDictionary.MergedDictionaries>
+	<x:Array x:Key="Views" Type="m:ViewInfo">
+		<m:ViewInfo Name="Животные" Icon="{StaticResource animal1DrawingImage}"
+					/>
+		<m:ViewInfo Name="Настройки" Icon="{StaticResource settings1DrawingImage}"
+					ViewModelType="{x:Type vm:SettingsViewModel}"/>
+	</x:Array>
+</ResourceDictionary>

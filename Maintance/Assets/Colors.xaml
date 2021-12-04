@@ -1,0 +1,15 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<Color x:Key="Gray1Color">#27292A</Color>
+	<SolidColorBrush x:Key="Gray1" Color="{StaticResource Gray1Color}"/>
+	<Color x:Key="Gray2Color">#1D1E1F</Color>
+	<SolidColorBrush x:Key="Gray2" Color="{StaticResource Gray2Color}"/>
+	<SolidColorBrush x:Key="Gray3" Color="#FF0F1215"/>
+
+	<SolidColorBrush x:Key="GrayFont" Color="#9E9E9E"/>
+	<SolidColorBrush x:Key="WhiteFont" Color="WhiteSmoke"/>
+
+	<Color x:Key="Sky1Color">#FFA0E1FB</Color>
+	<SolidColorBrush x:Key="Sky1" Color="{StaticResource Sky1Color}"/>
+</ResourceDictionary>
