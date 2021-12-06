@@ -43,6 +43,7 @@ namespace Maintance
 				.AddSingleton<ViewsLocator>()
 				
 				//Navigation VMS:
+				.AddSingleton<AnimalsViewModel>()
 				.AddSingleton<SettingsViewModel>()
 
 				.BuildServiceProvider(

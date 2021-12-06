@@ -28,12 +28,10 @@
 
 	<Border x:Name="MainWindowBorder" BorderBrush="Red" BorderThickness="0">
 		<Grid x:Name="MainWindow_Grid">
-
 			<Grid.RowDefinitions>
 				<RowDefinition Height="30"/>
 				<RowDefinition Height="*"/>
 			</Grid.RowDefinitions>
-
 			<Grid x:Name="Chrome_grid" Grid.Row="0" Background="{StaticResource Gray2}" WindowChrome.IsHitTestVisibleInChrome="False">
 				<StackPanel x:Name="AppInfo_Panel" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
 					<exc:ButtonEx ButtonBehavior="ImageWithOpacity" Cursor="Arrow"
@@ -132,6 +130,9 @@
 					<ContentControl x:Name="Content_view" Margin="20"
 									Content="{Binding CurrentViewVM}">
 						<ContentControl.Resources>
+							<DataTemplate DataType="{x:Type vm:AnimalsViewModel}">
+								<view:AnimalsView/>
+							</DataTemplate>
 							<DataTemplate DataType="{x:Type vm:SettingsViewModel}">
 								<view:SettingsView/>
 							</DataTemplate>

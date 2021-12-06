@@ -1,0 +1,105 @@
+﻿<UserControl x:Class="Maintance.MainViews.AnimalsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+			 xmlns:vm="clr-namespace:Maintance.ViewModels"
+             xmlns:local="clr-namespace:Maintance.MainViews"
+			 xmlns:exc="clr-namespace:WPFCoreEx.Controls;assembly=WPFCoreEx"
+             mc:Ignorable="d" 
+			 d:DataContext="{d:DesignInstance Type=vm:AnimalsViewModel, IsDesignTimeCreatable=True}"
+             d:DesignHeight="380" d:DesignWidth="760">
+	<UserControl.Resources>
+		<ResourceDictionary Source="..\Assets\Colors.xaml"/>
+	</UserControl.Resources>
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="0.1*"/>
+			<RowDefinition Height="1*"/>
+		</Grid.RowDefinitions>
+		<DockPanel Grid.Row="0" LastChildFill="False">
+			<ComboBox x:Name="GroupBy_CB" Width="100" Background="{StaticResource Gray1}">
+				<ComboBox.ItemTemplate>
+					<DataTemplate>
+						<TextBlock Background="Black" Text="{Binding}"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+			</ComboBox>
+		</DockPanel>
+		<DataGrid Grid.Row="1" x:Name="Resources_DataGrid" ItemsSource="{Binding Animals}"
+						  VerticalAlignment="Top"
+						  HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden"
+						  Background="Transparent" RowBackground="Transparent" Foreground="Transparent"
+						  BorderThickness="0" BorderBrush="Transparent"
+						  AutoGenerateColumns="False" HeadersVisibility="Column" GridLinesVisibility="None"
+						  CanUserDeleteRows="False" CanUserAddRows="False"
+						  ColumnHeaderStyle="{DynamicResource ColumnHeaderBase}" CellStyle="{DynamicResource CellStyleBase}">
+			<DataGrid.Resources>
+				<Style x:Key="ColumnHeaderBase" TargetType="{x:Type DataGridColumnHeader}">
+					<Setter Property="Background" Value="Transparent"/>
+					<Setter Property="Foreground" Value="White"/>
+				</Style>
+				<Style x:Key="ColumnHeaderCenter" TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource ColumnHeaderBase}">
+					<Setter Property="HorizontalContentAlignment" Value="Center"/>
+					<Setter Property="VerticalContentAlignment" Value="Center"/>
+				</Style>
+				<Style x:Key="CellStyleBase" TargetType="{x:Type DataGridCell}">
+					<Setter Property="Padding" Value="0,0,0,0"/>
+					<Setter Property="Background" Value="Transparent"/>
+					<Setter Property="Foreground" Value="Cyan"/>
+					<Setter Property="BorderThickness" Value="0"/>
+					<Setter Property="BorderBrush" Value="Transparent"/>
+					<Setter Property="Template">
+						<Setter.Value>
+							<ControlTemplate TargetType="{x:Type DataGridCell}">
+								<Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True"
+								   Padding="{TemplateBinding Padding}">
+									<ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Margin="0"/>
+								</Border>
+							</ControlTemplate>
+						</Setter.Value>
+					</Setter>
+					<Style.Triggers>
+						<Trigger Property="IsSelected" Value="True">
+							<Setter Property="Background" Value="DarkMagenta"/>
+						</Trigger>
+					</Style.Triggers>
+				</Style>
+				<Style x:Key="TextColumnElementStyle" TargetType="{x:Type TextBlock}">
+					<Setter Property="Margin" Value="0,0,5,0"/>
+				</Style>
+			</DataGrid.Resources>
+			<DataGrid.Columns>
+				<DataGridTextColumn Header="Name" Binding="{Binding Name, Mode=OneWay}" Width="0.5*" ElementStyle="{StaticResource TextColumnElementStyle}"/>
+				<DataGridTextColumn Header="Type" Binding="{Binding Type, Mode=OneWay}" Width="0.5*" ElementStyle="{StaticResource TextColumnElementStyle}"/>
+			</DataGrid.Columns>
+			<DataGrid.GroupStyle>
+				<!-- Style for groups at top level. -->
+				<GroupStyle>
+					<GroupStyle.ContainerStyle>
+						<Style TargetType="{x:Type GroupItem}">
+							<Setter Property="Margin" Value="0,0,0,5"/>
+							<Setter Property="Template">
+								<Setter.Value>
+									<ControlTemplate TargetType="{x:Type GroupItem}">
+										<Expander IsExpanded="True" Background="#FF112255" BorderBrush="#FF002255" Foreground="#FFEEEEEE" BorderThickness="1,1,1,5">
+											<Expander.Header>
+												<DockPanel>
+													<TextBlock FontWeight="Bold" Text="{Binding Name}" Margin="5,0,0,0" Width="100"/>
+													<TextBlock FontWeight="Bold" Text="{Binding ItemCount}"/>
+												</DockPanel>
+											</Expander.Header>
+											<Expander.Content>
+												<ItemsPresenter />
+											</Expander.Content>
+										</Expander>
+									</ControlTemplate>
+								</Setter.Value>
+							</Setter>
+						</Style>
+					</GroupStyle.ContainerStyle>
+				</GroupStyle>
+			</DataGrid.GroupStyle>
+		</DataGrid>
+	</Grid>
+</UserControl>

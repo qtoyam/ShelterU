@@ -7,7 +7,7 @@
 	</ResourceDictionary.MergedDictionaries>
 	<x:Array x:Key="Views" Type="m:ViewInfo">
 		<m:ViewInfo Name="Животные" Icon="{StaticResource animal1DrawingImage}"
-					/>
+					ViewModelType="{x:Type vm:AnimalsViewModel}"/>
 		<m:ViewInfo Name="Настройки" Icon="{StaticResource settings1DrawingImage}"
 					ViewModelType="{x:Type vm:SettingsViewModel}"/>
 	</x:Array>
