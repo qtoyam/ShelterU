@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Maintance"
+		xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
 		xmlns:bex="clr-namespace:WPFCoreEx.Behaviors;assembly=WPFCoreEx"
 		xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
 		xmlns:exc="clr-namespace:WPFCoreEx.Controls;assembly=WPFCoreEx"
@@ -12,6 +13,7 @@
         mc:Ignorable="d"
 		d:DataContext="{d:DesignInstance Type=vm:MainViewModel, IsDesignTimeCreatable=False}"
         Title="Maintance" Height="450" Width="1000" WindowStyle="None"
+		Background="{DynamicResource Gray2}"
 		MinWidth="400">
 	<WindowChrome.WindowChrome>
 		<WindowChrome CaptionHeight="30" UseAeroCaptionButtons="False"/>
@@ -71,57 +73,25 @@
 				</Grid.Resources>
 				<!--Navigation-->
 				<ListView x:Name="Navigation_list" Grid.Column="0" ItemsSource="{StaticResource Views}"
-						  SelectionMode="Single"
-						  ItemContainerStyle="{StaticResource NoSelectionVisibleListViewItem}"
-						  Background="{StaticResource Gray2}" BorderThickness="0"
+						  
 						  SelectedItem="{Binding SelectedView, Mode=OneWayToSource}"						  
-						  Padding="-1">
+						  >
 					<ListView.ItemTemplate>
 						<DataTemplate>
-							<Grid x:Name="Navigation_element_grid" Height="40" Background="{DynamicResource Gray2}">
+							<Grid x:Name="Navigation_element_grid" Margin="30,10,10,10">
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="5"/>
 									<ColumnDefinition Width="24"/>
 									<ColumnDefinition Width="*"/>
 								</Grid.ColumnDefinitions>
-								<Border x:Name="Selection_highlight" Background="{StaticResource Sky1}" Visibility="Collapsed"/>
 
 								<Image Grid.Column="1" Source="{Binding Icon}" Width="20" Height="20"/>
 
 								<TextBlock Grid.Column="2" Text="{Binding Name}"
-										   Foreground="{StaticResource GrayFont}" FontSize="20"
+										   Foreground="{StaticResource GrayFont}" FontSize="16"
 										   VerticalAlignment="Center"/>
 							</Grid>
 
-							<DataTemplate.Triggers>
-								<DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListViewItem}, Path=IsSelected}"
-											 Value="True">
-									<DataTrigger.Setters>
-										<Setter TargetName="Selection_highlight" Property="Visibility"
-												Value="Visible"/>
-									</DataTrigger.Setters>
-									<DataTrigger.EnterActions>
-										<BeginStoryboard>
-											<Storyboard>
-												<ColorAnimation
-													Storyboard.TargetName="Navigation_element_grid"
-													Storyboard.TargetProperty="(Background).(SolidColorBrush.Color)"
-													To="{StaticResource Gray1Color}" Duration="0:0:0.3"/>
-											</Storyboard>
-										</BeginStoryboard>
-									</DataTrigger.EnterActions>
-									<DataTrigger.ExitActions>
-										<BeginStoryboard>
-											<Storyboard>
-												<ColorAnimation
-													Storyboard.TargetName="Navigation_element_grid"
-													Storyboard.TargetProperty="(Background).(SolidColorBrush.Color)"
-													To="{StaticResource Gray2Color}" Duration="0:0:0.3"/>
-											</Storyboard>
-										</BeginStoryboard>
-									</DataTrigger.ExitActions>
-								</DataTrigger>
-							</DataTemplate.Triggers>
 						</DataTemplate>
 					</ListView.ItemTemplate>
 				</ListView>
@@ -135,6 +105,9 @@
 							</DataTemplate>
 							<DataTemplate DataType="{x:Type vm:SettingsViewModel}">
 								<view:SettingsView/>
+							</DataTemplate>
+							<DataTemplate DataType="{x:Type vm:BreedsViewModel}">
+								<view:BreedsView/>
 							</DataTemplate>
 						</ContentControl.Resources>
 					</ContentControl>

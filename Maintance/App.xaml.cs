@@ -6,10 +6,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
+using Maintance.ExViews;
 using Maintance.Services;
 using Maintance.ViewModels;
 
 using Microsoft.Extensions.DependencyInjection;
+
+using MySql.Data.MySqlClient;
 
 using Serilog;
 
@@ -27,7 +30,7 @@ namespace Maintance
 
 		public App()
 		{
-			this.Dispatcher.UnhandledException += Dispatcher_UnhandledException;
+			//this.Dispatcher.UnhandledException += Dispatcher_UnhandledException;
 			Log.Logger = new LoggerConfiguration()
 				.MinimumLevel.Verbose()
 				.WriteTo.Debug()
@@ -35,19 +38,24 @@ namespace Maintance
 				.CreateLogger();
 
 			ServiceCollection services = new();
-
 			_serviceProvider = services
 				.AddSingleton<IMessageService, EventMessageService>()
 				.AddSingleton<MainViewModel>()
 				.AddSingleton<MainWindow>()
 				.AddSingleton<ViewsLocator>()
-				
+				.AddSingleton<DBService>()
+				.AddSingleton<SelectorLocator>()
+
+				.AddTransient<GenusSelectorVM>()
+				.AddTransient<GenusSelectorWindow>()
+
 				//Navigation VMS:
 				.AddSingleton<AnimalsViewModel>()
 				.AddSingleton<SettingsViewModel>()
+				.AddSingleton<BreedsViewModel>()
 
 				.BuildServiceProvider(
-#if DEBUG2
+#if DEBUG
 				new ServiceProviderOptions() { ValidateOnBuild = true, ValidateScopes = true }
 #endif
 				);
@@ -71,7 +79,7 @@ namespace Maintance
 			_serviceProvider.Dispose();
 			Log.Debug("App exited.");
 			Log.CloseAndFlush();
-			this.DispatcherUnhandledException -= Dispatcher_UnhandledException;
+			//this.DispatcherUnhandledException -= Dispatcher_UnhandledException;
 		}
 	}
 }

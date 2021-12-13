@@ -10,5 +10,7 @@
 					ViewModelType="{x:Type vm:AnimalsViewModel}"/>
 		<m:ViewInfo Name="Настройки" Icon="{StaticResource settings1DrawingImage}"
 					ViewModelType="{x:Type vm:SettingsViewModel}"/>
+		<m:ViewInfo Name="Породы" Icon="{StaticResource animal_breedDrawingImage}"
+					ViewModelType="{x:Type vm:BreedsViewModel}"/>
 	</x:Array>
 </ResourceDictionary>

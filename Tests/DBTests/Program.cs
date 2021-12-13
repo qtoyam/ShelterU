@@ -2,8 +2,17 @@
 using MySql.Data.MySqlClient;
 
 Console.WriteLine("Hello, World!");
-using (MySqlConnection cnn = new("server=localhost;database=testDB;uid=root;pwd=abc123;"))
+using (MySqlConnection cnn = new("server=localhost;database=shelter;uid=root;pwd=zxc123;"))
 {
 	cnn.Open();
+	MySqlCommand cmd = new("SELECT * FROM Genus", cnn);
+	using (var r = cmd.ExecuteReader())
+	{
+		while (r.Read())
+		{
+			Console.WriteLine();
+		}
+	}
+	
 }
 

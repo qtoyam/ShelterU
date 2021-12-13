@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,19 +14,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-using Maintance.Models;
-using Maintance.ViewModels;
-
-using WPFCoreEx.Controls;
-
 namespace Maintance.MainViews
 {
 	/// <summary>
-	/// Interaction logic for AnimalsView.xaml
+	/// Interaction logic for BreedsView.xaml
 	/// </summary>
-	public partial class AnimalsView : UserControl
+	public partial class BreedsView : UserControl
 	{
-		public AnimalsView()
+		public BreedsView()
 		{
 			InitializeComponent();
 			_changeFilterTBWidth = new(100, TimeSpan.FromSeconds(0.5));
@@ -45,7 +39,7 @@ namespace Maintance.MainViews
 					if (c.Header is string h && h == gp)
 					{
 						c.Visibility = Visibility.Collapsed;
-						if(_hiddenCol != null)
+						if (_hiddenCol != null)
 						{
 							_hiddenCol.Visibility = Visibility.Visible;
 						}
