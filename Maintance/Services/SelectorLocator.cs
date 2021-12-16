@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Maintance.ExViews;
-using Maintance.Models;
+using Maintance.DbModels;
 using Maintance.ViewModels;
 
 using Microsoft.Extensions.DependencyInjection;

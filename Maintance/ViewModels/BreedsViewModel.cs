@@ -10,14 +10,14 @@ using MvvmGen;
 
 using Maintance.Helpers;
 
-using Maintance.Models;
+using Maintance.DbModels;
 using MaterialDesignThemes.Wpf;
 using Maintance.Services;
 
 namespace Maintance.ViewModels
 {
 	[ViewModel]
-	[Inject(typeof(DBService))]
+	[Inject(typeof(ShelterContext))]
 	[Inject(typeof(SelectorLocator))]
 	public partial class BreedsViewModel
 	{

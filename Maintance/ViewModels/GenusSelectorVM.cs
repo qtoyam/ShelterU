@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Maintance.Models;
+using Maintance.DbModels;
 using Maintance.Services;
 
 using MvvmGen;
@@ -15,13 +15,13 @@ using WPFCoreEx.Bases;
 namespace Maintance.ViewModels
 { 
 	[ViewModel]
-	[Inject(typeof(DBService))]
+	[Inject(typeof(ShelterContext))]
 	public partial class GenusSelectorVM
 	{
 
 		partial void OnInitialize()
 		{
-			Genuses = new(DBService.GetGenuses());
+			
 		}
 
 		[Property] private string _name = "";

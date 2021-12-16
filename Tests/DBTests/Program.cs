@@ -1,18 +1,14 @@
 ﻿// See https://aka.ms/new-console-template for more information
-using MySql.Data.MySqlClient;
+using System.Text;
 
-Console.WriteLine("Hello, World!");
-using (MySqlConnection cnn = new("server=localhost;database=shelter;uid=root;pwd=zxc123;"))
+using DBTests;
+
+using(var t = new ShelterContext())
 {
-	cnn.Open();
-	MySqlCommand cmd = new("SELECT * FROM Genus", cnn);
-	using (var r = cmd.ExecuteReader())
+	foreach(var b in t.Breeds)
 	{
-		while (r.Read())
-		{
-			Console.WriteLine();
-		}
+		Console.WriteLine(b);
+		var g = b.Gender;
 	}
-	
 }
 

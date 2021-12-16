@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
+using Maintance.DbModels;
 using Maintance.ExViews;
 using Maintance.Services;
 using Maintance.ViewModels;
@@ -43,7 +44,7 @@ namespace Maintance
 				.AddSingleton<MainViewModel>()
 				.AddSingleton<MainWindow>()
 				.AddSingleton<ViewsLocator>()
-				.AddSingleton<DBService>()
+				.AddSingleton<ShelterContext>()
 				.AddSingleton<SelectorLocator>()
 
 				.AddTransient<GenusSelectorVM>()

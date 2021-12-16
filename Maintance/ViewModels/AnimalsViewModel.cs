@@ -9,14 +9,14 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 
 using Maintance.Helpers;
-using Maintance.Models;
+using Maintance.DbModels;
 using Maintance.Services;
 
 using MvvmGen;
 
 namespace Maintance.ViewModels
 {
-	[Inject(typeof(DBService))]
+	[Inject(typeof(ShelterContext))]
 	[ViewModel]
 	public partial class AnimalsViewModel
 	{

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Media;
 
-namespace Maintance.Models
+namespace Maintance.DbModels
 {
 #nullable disable
 	public class ViewInfo

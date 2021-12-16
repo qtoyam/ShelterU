@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Maintance.Models;
+using Maintance.DbModels;
 using Maintance.Services;
 
 using MvvmGen;

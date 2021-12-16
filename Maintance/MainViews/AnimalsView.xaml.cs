@@ -15,7 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-using Maintance.Models;
+using Maintance.DbModels;
 using Maintance.ViewModels;
 
 using WPFCoreEx.Controls;
@@ -31,7 +31,10 @@ namespace Maintance.MainViews
 		{
 			InitializeComponent();
 			_changeFilterTBWidth = new(100, TimeSpan.FromSeconds(0.5));
-
+			//DB_grid.Columns.Add(new MaterialDesignThemes.Wpf.DataGridTextColumn()
+			//{
+				
+			//})
 		}
 
 		private DataGridColumn? _hiddenCol;

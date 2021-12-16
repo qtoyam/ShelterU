@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Maintance.Models.Attributes;
-using Maintance.Models;
+using Maintance.DbModels.Attributes;
+using Maintance.DbModels;
 using System.ComponentModel;
 using System.Windows.Data;
 

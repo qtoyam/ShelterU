@@ -13,7 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-using Maintance.Models;
+using Maintance.DbModels;
 using Maintance.ViewModels;
 
 namespace Maintance.ExViews
