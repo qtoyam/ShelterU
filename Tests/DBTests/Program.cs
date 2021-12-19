@@ -3,12 +3,14 @@ using System.Text;
 
 using DBTests;
 
-using(var t = new ShelterContext())
+using Microsoft.EntityFrameworkCore;
+
+using (var t = new ShelterContext())
 {
 	foreach(var b in t.Breeds)
 	{
 		Console.WriteLine(b);
-		var g = b.Gender;
+		var g = b.Genus;
 	}
 }
 

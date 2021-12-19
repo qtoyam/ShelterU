@@ -10,33 +10,21 @@ namespace DBTests
 {
 #nullable disable
 	[Table("breed")]
-	internal class Breed
+	public class Breed
 	{
 		[Column("breed_ID")]
-		[Key]
 		public int ID { get; set; }
 
 		[Column("name")]
 		public string Name { get; set; }
 
 		[ForeignKey("genus_ID")]
-		public Genus Genus { get; set; }
+		public virtual Genus Genus { get; set; }
 
 		[Column("gender")]
-		public Gtype Gender { get; set; }
+		public string Gender { get; set; }
 
-		[Column("description", TypeName = "VARCHAR(1)")]
+		[Column("description")]
 		public string Description { get; set; }
-	}
-
-	public enum Sex
-	{
-		М,
-		Ж
-	}
-
-	public enum Gtype
-	{
-
 	}
 }

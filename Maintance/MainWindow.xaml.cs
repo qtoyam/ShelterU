@@ -13,7 +13,12 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-using Maintance.ViewModels;
+using Maintance.DbModels;
+using Maintance.Services;
+using Maintance.TableAutomation;
+using Maintance.TableAutomation.Views;
+
+using Microsoft.EntityFrameworkCore;
 
 using WPFCoreEx.Abstractions.Services;
 using WPFCoreEx.Services;
@@ -26,13 +31,16 @@ namespace Maintance
 	public partial class MainWindow : Window
 	{
 		private readonly EventMessageService _ems;
+		private readonly TableManagerSelector _tableManagerSelector;
 
-		public MainWindow(MainViewModel viewModel, IMessageService ims)
+		public MainWindow(IMessageService ims, TableManagerSelector tableManagerSelector)
 		{
 			InitializeComponent();
-			DataContext = viewModel;
 			_ems = (EventMessageService)ims;
+			_tableManagerSelector = tableManagerSelector;
+
 			_ems.RegisterAllDefault(this);
+			Navigation_list.ItemsSource = _tableManagerSelector.TableNames;
 		}
 
 		protected override void OnStateChanged(EventArgs e)
@@ -52,6 +60,13 @@ namespace Maintance
 		{
 			_ems.UnregisterAll();
 			base.OnClosed(e);
+		}
+
+		private void Navigation_list_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			FrameView.Content = e.AddedItems.Count > 0 && e.AddedItems[0] is string pn ?
+				_tableManagerSelector.GetViewPage(pn)
+				: null;
 		}
 	}
 }

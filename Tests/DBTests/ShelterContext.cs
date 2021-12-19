@@ -21,11 +21,7 @@ namespace DBTests
 		{
 			modelBuilder
 				.Entity<Breed>()
-				.Property(e => e.Gender)
-				.HasConversion(
-					v => (int)v,
-					v => (Gtype)v
-				);
+				.Navigation(e => e.Genus).AutoInclude();
 		}
 
 

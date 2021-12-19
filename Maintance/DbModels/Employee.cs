@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Maintance.DbModels.Attributes;
+using Maintance.TableAutomation.Models;
 
 namespace Maintance.DbModels
 {

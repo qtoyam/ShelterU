@@ -4,14 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Maintance"
-		xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
 		xmlns:bex="clr-namespace:WPFCoreEx.Behaviors;assembly=WPFCoreEx"
 		xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
 		xmlns:exc="clr-namespace:WPFCoreEx.Controls;assembly=WPFCoreEx"
-		xmlns:vm="clr-namespace:Maintance.ViewModels"
-		xmlns:view="clr-namespace:Maintance.MainViews"
         mc:Ignorable="d"
-		d:DataContext="{d:DesignInstance Type=vm:MainViewModel, IsDesignTimeCreatable=False}"
         Title="Maintance" Height="450" Width="1000" WindowStyle="None"
 		Background="{DynamicResource Gray2}"
 		MinWidth="400">
@@ -21,8 +17,6 @@
 	<Window.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
-				<ResourceDictionary Source="Assets\ImageButtons.xaml"/>
-				<ResourceDictionary Source="Assets\Colors.xaml"/>
 				<ResourceDictionary Source="pack://application:,,,/WPFCoreEx;component/Styles/NoSelectionVisibleListViewItem.xaml"/>
 			</ResourceDictionary.MergedDictionaries>
 		</ResourceDictionary>
@@ -36,12 +30,7 @@
 			</Grid.RowDefinitions>
 			<Grid x:Name="Chrome_grid" Grid.Row="0" Background="{StaticResource Gray2}" WindowChrome.IsHitTestVisibleInChrome="False">
 				<StackPanel x:Name="AppInfo_Panel" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
-					<exc:ButtonEx ButtonBehavior="ImageWithOpacity" Cursor="Arrow"
-								  WindowChrome.IsHitTestVisibleInChrome="True"
-								  Command="{Binding GetMainInfoCommand}"
-								  >
-						<Image Source="{StaticResource paw_heartDrawingImage}"/>
-					</exc:ButtonEx>
+					<Image Source="{StaticResource paw_heartDrawingImage}"/>
 					<TextBlock Text="Shelter maintance" VerticalAlignment="Center"
 							   Margin="10,0,0,0" Foreground="{StaticResource WhiteFont}"/>
 				</StackPanel>
@@ -57,7 +46,7 @@
 					<exc:ButtonEx x:Name="CloseBtn" ButtonBehavior="ImageWithOpacity">
 						<Image Source="{StaticResource closeDrawingImage}"/>
 						<b:Interaction.Behaviors>
-							<bex:CloseWindowBehavior/>
+							<bex:ShutdownAppBehavior ShutdownCode="2"/>
 						</b:Interaction.Behaviors>
 					</exc:ButtonEx>
 				</StackPanel>
@@ -68,14 +57,9 @@
 					<ColumnDefinition Width="1*" MinWidth="200"/>
 					<ColumnDefinition Width="4*"/>
 				</Grid.ColumnDefinitions>
-				<Grid.Resources>
-					<ResourceDictionary Source="Assets\ViewInfos.xaml"/>
-				</Grid.Resources>
 				<!--Navigation-->
-				<ListView x:Name="Navigation_list" Grid.Column="0" ItemsSource="{StaticResource Views}"
-						  
-						  SelectedItem="{Binding SelectedView, Mode=OneWayToSource}"						  
-						  >
+				<ListView x:Name="Navigation_list" Grid.Column="0"
+						  SelectionChanged="Navigation_list_SelectionChanged">
 					<ListView.ItemTemplate>
 						<DataTemplate>
 							<Grid x:Name="Navigation_element_grid" Margin="30,10,10,10">
@@ -85,9 +69,9 @@
 									<ColumnDefinition Width="*"/>
 								</Grid.ColumnDefinitions>
 
-								<Image Grid.Column="1" Source="{Binding Icon}" Width="20" Height="20"/>
+								<!--<Image Grid.Column="1" Source="{Binding Icon}" Width="20" Height="20"/>-->
 
-								<TextBlock Grid.Column="2" Text="{Binding Name}"
+								<TextBlock Grid.Column="2" Text="{Binding}"
 										   Foreground="{StaticResource GrayFont}" FontSize="16"
 										   VerticalAlignment="Center"/>
 							</Grid>
@@ -97,20 +81,7 @@
 				</ListView>
 
 				<Border x:Name="Border_content" Grid.Column="1" Background="{StaticResource Gray1}">
-					<ContentControl x:Name="Content_view" Margin="20"
-									Content="{Binding CurrentViewVM}">
-						<ContentControl.Resources>
-							<DataTemplate DataType="{x:Type vm:AnimalsViewModel}">
-								<view:AnimalsView/>
-							</DataTemplate>
-							<DataTemplate DataType="{x:Type vm:SettingsViewModel}">
-								<view:SettingsView/>
-							</DataTemplate>
-							<DataTemplate DataType="{x:Type vm:BreedsViewModel}">
-								<view:BreedsView/>
-							</DataTemplate>
-						</ContentControl.Resources>
-					</ContentControl>
+					<Frame x:Name="FrameView" Margin="20"/>
 				</Border>
 			</Grid>
 		</Grid>

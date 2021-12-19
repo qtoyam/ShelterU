@@ -1,4 +1,6 @@
-﻿using Maintance.DbModels.Attributes;
+﻿using Maintance.TableAutomation.Models;
+
+using System;
 
 namespace Maintance.DbModels
 {

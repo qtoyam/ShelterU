@@ -1,0 +1,89 @@
+﻿<Page x:Class="Maintance.TableAutomation.Views.TableViewPage"
+	  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+	  xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+	  xmlns:exconv="clr-namespace:WPFCoreEx.Converters;assembly=WPFCoreEx"
+	  xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+	  mc:Ignorable="d" 
+	  d:DesignHeight="380" d:DesignWidth="900"
+	  >
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="1*"/>
+		</Grid.RowDefinitions>
+		<DockPanel Grid.Row="0" LastChildFill="False">
+			<ComboBox x:Name="GroupBy_CB"
+					  materialDesign:HintAssist.Hint="Группировать по"
+					  Foreground="Cyan"
+					  Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+					  SelectionChanged="GroupingChanged"/>
+			<ComboBox x:Name="FilterBy_CB"
+				Margin="10,0,0,0"
+					  materialDesign:HintAssist.Hint="Фильтровать по"
+					  Foreground="Cyan"
+					  Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+					  SelectionChanged="FilterBy_CB_SelectionChanged"
+					  />
+			<TextBox x:Name="FilterBy_TB"
+					 Margin="10,0,0,0"
+					 Width="0"
+					 Foreground="Cyan"
+					 VerticalContentAlignment="Center"	
+					 materialDesign:HintAssist.Hint="Значение"
+					 TextChanged="FilteringChanged"
+					 />
+
+			<Button x:Name="DeleteBtn"
+					Content="Удалить" DockPanel.Dock="Right" Margin="0,0,10,0"
+					IsEnabled="{Binding ElementName=DB_grid, Path=SelectedIndex, Converter={exconv:IntPositiveBooleanConverter}}"
+					/>
+			<Button x:Name="EditBtn"
+					Content="Изменить" DockPanel.Dock="Right" Margin="0,0,10,0"
+					IsEnabled="{Binding ElementName=DB_grid, Path=SelectedIndex, Converter={exconv:IntPositiveBooleanConverter}}"
+					/>
+			<Button x:Name="AddBtn"
+					Content="Добавить" DockPanel.Dock="Right" Margin="0,0,10,0"
+					/>
+		</DockPanel>
+		<DataGrid x:Name="DB_grid" Grid.Row="1"
+				  Background="Transparent"
+				  CanUserAddRows="False"
+				  CanUserDeleteRows="False"
+				  SelectionMode="Single"
+				  Style="{StaticResource MaterialDesignDataGrid}"
+				  HeadersVisibility="Column" Foreground="AliceBlue"
+				  AutoGenerateColumns="False"
+				  GridLinesVisibility="None"
+				  SelectionUnit="FullRow"
+				  >
+			<DataGrid.GroupStyle>
+				<GroupStyle>
+					<GroupStyle.ContainerStyle>
+						<Style TargetType="{x:Type GroupItem}">
+							<Setter Property="Margin" Value="0,0,0,5"/>
+							<Setter Property="Template">
+								<Setter.Value>
+									<ControlTemplate TargetType="{x:Type GroupItem}">
+										<Expander Foreground="#FFEEEEEE" BorderThickness="1,1,1,5">
+											<Expander.Header>
+												<DockPanel>
+													<TextBlock FontWeight="Bold" Text="{Binding Name}" Margin="5,0,0,0" Width="100"/>
+													<TextBlock FontWeight="Bold" Text="{Binding ItemCount}"/>
+												</DockPanel>
+											</Expander.Header>
+											<Expander.Content>
+												<ItemsPresenter />
+											</Expander.Content>
+										</Expander>
+									</ControlTemplate>
+								</Setter.Value>
+							</Setter>
+						</Style>
+					</GroupStyle.ContainerStyle>
+				</GroupStyle>
+			</DataGrid.GroupStyle>
+		</DataGrid>
+	</Grid>
+</Page>

@@ -1,17 +1,18 @@
 ﻿using System.Collections.Generic;
 
-using Maintance.DbModels.Attributes;
+using Maintance.TableAutomation.Models;
 
 namespace Maintance.DbModels
 {
-	public partial class Breed
+	[TableInfo("Породы")]
+	public partial class Breed : IDBModel
     {
         public Breed()
         {
             Animals = new HashSet<Animal>();
         }
 
-		[ViewColumn("Id", false, false)]
+		[ViewColumn("Id", false, false, true, isSelectionVisible: true, isSelectionFilter: true)]
 		public int BreedId { get; set; }
 
 		[ViewColumn("Название", false, false)]
@@ -28,5 +29,7 @@ namespace Maintance.DbModels
 		[ViewColumn("Род", false, false)]
 		public virtual Genus Genus { get; set; } = null!;
         public virtual ICollection<Animal> Animals { get; set; }
-    }
+
+		public override string ToString() => Name;
+	}
 }

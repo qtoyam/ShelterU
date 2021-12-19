@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace DBTests
 {
 	[Table("Genus")]
-	internal class Genus
+	public class Genus
 	{
 		[Column("genus_ID")]
 		public int ID { get; set; }
