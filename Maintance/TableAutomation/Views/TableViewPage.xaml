@@ -4,6 +4,7 @@
 	  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
 	  xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 	  xmlns:exconv="clr-namespace:WPFCoreEx.Converters;assembly=WPFCoreEx"
+	  xmlns:mm="clr-namespace:Maintance.Converters"
 	  xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
 	  mc:Ignorable="d" 
 	  d:DesignHeight="380" d:DesignWidth="900"
@@ -69,7 +70,7 @@
 										<Expander Foreground="#FFEEEEEE" BorderThickness="1,1,1,5">
 											<Expander.Header>
 												<DockPanel>
-													<TextBlock FontWeight="Bold" Text="{Binding Name}" Margin="5,0,0,0" Width="100"/>
+													<TextBlock FontWeight="Bold" Text="{Binding Name, Converter={mm:EnumTryToStringConverter}}" Margin="5,0,0,0" Width="100"/>
 													<TextBlock FontWeight="Bold" Text="{Binding ItemCount}"/>
 												</DockPanel>
 											</Expander.Header>

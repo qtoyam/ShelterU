@@ -44,12 +44,14 @@ namespace Maintance.TableAutomation.Views
 				Control controlForProperty;
 				FrameworkElement? parent = null;
 				Type? t = Nullable.GetUnderlyingType(vcp.PropertyInfo.PropertyType);
-				bool isNullable = t != null;
+				bool isNullable = !vcp.PropertyInfo.PropertyType.IsValueType || t != null;
 				t ??= vcp.PropertyInfo.PropertyType;
 				Binding binding = new(vcp.PropertyInfo.Name);
 				BindingExpression currentBindingExpr;
 				bool isDBModel = t.GetInterfaces().Contains(typeof(IDBModel));
+				//binding.Mode = BindingMode.TwoWay;
 				binding.Mode = isDBModel ? BindingMode.OneWay : BindingMode.TwoWay;
+				binding.UpdateSourceTrigger = UpdateSourceTrigger.Default;
 				if (!isNullable || !vcp.PropertyInfoAttribute.IsOptional)
 				{
 					if (t == typeof(string))
@@ -57,7 +59,8 @@ namespace Maintance.TableAutomation.Views
 						binding.ValidationRules.Add(new StringNotEmptyValidationRule()
 						{
 							MessageIfEmpty = "Обязательно к заполнению! (string)",
-							ValidationStep = ValidationStep.RawProposedValue
+							ValidationStep = ValidationStep.RawProposedValue,
+							ValidatesOnTargetUpdated = true
 						});
 					}
 					else
@@ -65,7 +68,8 @@ namespace Maintance.TableAutomation.Views
 						binding.ValidationRules.Add(new ValueNotNullValidationRule()
 						{
 							MessageIfNull = "Обязательно к заполнению!",
-							ValidationStep = ValidationStep.RawProposedValue
+							ValidationStep = ValidationStep.RawProposedValue,
+							ValidatesOnTargetUpdated = true
 						});
 					}
 				}
@@ -76,8 +80,21 @@ namespace Maintance.TableAutomation.Views
 					currentBindingExpr = (BindingExpression)BindingOperations.SetBinding(dp, DatePicker.SelectedDateProperty, binding);
 					controlForProperty = dp;
 				}
+				else if (t.IsEnum)
+				{
+					var enumStrDict = AutomationHelper.GetEnumDescriptions(t);
+					var cb = new ComboBox
+					{
+						ItemsSource = enumStrDict.Values
+					};
+					binding.Converter = new EnumToStrConverter(enumStrDict, t);
+					currentBindingExpr = (BindingExpression)BindingOperations.SetBinding(cb, ComboBox.SelectedItemProperty, binding);
+					controlForProperty = cb;
+				}
 				else if (isDBModel)
 				{
+					//binding.Converter = new FromSourceOnlyConverter();
+					binding.TargetNullValue = null;
 					DockPanel dp = new()
 					{
 						LastChildFill = true
@@ -89,8 +106,8 @@ namespace Maintance.TableAutomation.Views
 					};
 					var dbModelTableManager = tableManagerSelector.GetITableManager(t);
 					//btn.Style = (Style)Application.Current.Resources["MaterialDesignIconButton"];
-					TextBox tb = new() { IsReadOnly = true, IsReadOnlyCaretVisible = true };
-					currentBindingExpr = (BindingExpression)tb.SetBinding(TextBox.TextProperty, binding);
+					TextBox tb = new(){ IsReadOnly = false, IsReadOnlyCaretVisible = true };
+					currentBindingExpr = (BindingExpression)BindingOperations.SetBinding(tb, TextBox.TextProperty, binding);
 					btn.Click += (s, e) =>
 					{
 						if (dbModelTableManager.TrySelectEntity(out var res, this))
@@ -111,7 +128,7 @@ namespace Maintance.TableAutomation.Views
 				else
 				{
 					var tb = new TextBox();
-					binding.Converter = new EmptyStringToNullConverter();
+					//binding.Converter = new EmptyStringToNullConverter();
 					currentBindingExpr = (BindingExpression)BindingOperations.SetBinding(tb, TextBox.TextProperty, binding);
 					controlForProperty = tb;
 				}
@@ -134,9 +151,15 @@ namespace Maintance.TableAutomation.Views
 			bool hasError = false;
 			foreach (var b in _entityBindings)
 			{
-				var bi = BindingOperations.GetBinding(FieldsPanel.Children[1], TextBox.TextProperty);
-				b.UpdateSource();
-				hasError |= b.HasError;
+				b.UpdateTarget();
+				if (b.HasValidationError)
+				{
+					hasError |= true;
+				}
+				else
+				{
+					hasError |= !b.ValidateWithoutUpdate();
+				}
 			}
 			if (!hasError && await _tableManager.SaveWorkingEntityToDB())
 			{

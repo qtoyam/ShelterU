@@ -5,11 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
+using System.Windows.Markup;
 
 namespace Maintance.Converters
 {
 	[ValueConversion(typeof(object), typeof(string))]
-	public class EmptyStringToNullConverter : IValueConverter
+	public class EmptyStringToNullConverter :  IValueConverter
 	{
 		public object Convert(object valueSource, Type targetType, object parameter, CultureInfo culture)
 		{

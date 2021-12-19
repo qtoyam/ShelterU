@@ -50,17 +50,7 @@ namespace Maintance.DbModels
 		[PropertyInfo(displayName: "Порода", isAutofoFill: false, isOptional: false)]
 		[ViewColumn(isFilter: true, isGroup: true)]
 		[SelectionColumn(isVisible: true, isFilter: true)]
-		public virtual Breed Breed
-		{
-			get => _breed;
-			set
-			{
-				_breed = value;
-				BreedId = _breed.BreedId;
-			}
-		}
-
-		private Breed _breed=null!;
+		public virtual Breed Breed { get; set; } = null!;
 
 		public int BreedId { get; set; }
 		public virtual ICollection<AnimalMovement> AnimalMovements { get; set; }

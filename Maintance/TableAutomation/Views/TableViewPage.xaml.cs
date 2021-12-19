@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -16,7 +17,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-
+using Maintance.Converters;
 using Maintance.TableAutomation.Models;
 
 namespace Maintance.TableAutomation.Views
@@ -26,10 +27,13 @@ namespace Maintance.TableAutomation.Views
 	/// </summary>
 	public partial class TableViewPage : Page
 	{
-		private readonly List<string> _realFilteringPropNames;
-		private readonly List<string> _realGroupingPropNames;
+		private readonly List<PropertyInfo> _realFilteringProps = new();
+		private readonly List<PropertyInfo> _realGroupingProps = new();
 		private readonly List<DataGridColumn> _groupLinkedColumns = new();
 		private readonly ICollectionView _entitiesView;
+
+		private PropertyInfo? _currentFilteringProperty;
+		private IReadOnlyDictionary<int, string>? _enumFilterValues;
 
 		public TableViewPage(ITableManager tableManager)
 		{
@@ -37,31 +41,35 @@ namespace Maintance.TableAutomation.Views
 
 			var cols = DB_grid.Columns;
 			List<string> filteringOptions = new() { "" };
-			_realFilteringPropNames = new() { "" };
 			List<string> groupingOptions = new() { "" };
-			_realGroupingPropNames = new() { "" };
 			foreach (var vcp in tableManager.TableColumnInfos)
 			{
 				if (vcp.ViewColumnAttribute == null) continue;
+				Binding b = new(vcp.PropertyInfo.Name)
+				{
+					Mode = BindingMode.OneWay
+				};
+				if (vcp.PropertyInfo.PropertyType.IsEnum)
+				{
+					b.Converter = new EnumToStrConverter(AutomationHelper.GetEnumDescriptions(vcp.PropertyInfo.PropertyType),
+						vcp.PropertyInfo.PropertyType);
+				}
 				cols.Add(
 					new MaterialDesignThemes.Wpf.DataGridTextColumn()
 					{
 						Header = vcp.PropertyInfoAttribute.DisplayName,
-						Binding = new Binding(vcp.PropertyInfo.Name)
-						{
-							Mode = BindingMode.OneWay,
-						},
+						Binding = b,
 						IsReadOnly = true
 					});
 				if (vcp.ViewColumnAttribute.IsFilter)
 				{
 					filteringOptions.Add(vcp.PropertyInfoAttribute.DisplayName);
-					_realFilteringPropNames.Add(vcp.PropertyInfo.Name);
+					_realFilteringProps.Add(vcp.PropertyInfo);
 				}
 				if (vcp.ViewColumnAttribute.IsGroup)
 				{
 					groupingOptions.Add(vcp.PropertyInfoAttribute.DisplayName);
-					_realGroupingPropNames.Add(vcp.PropertyInfo.Name);
+					_realGroupingProps.Add(vcp.PropertyInfo);
 					_groupLinkedColumns.Add(cols.Last());
 				}
 
@@ -83,7 +91,8 @@ namespace Maintance.TableAutomation.Views
 			{
 				var gCol = _groupLinkedColumns[si - 1];
 				gCol.Visibility = Visibility.Collapsed;
-				gd.Add(new PropertyGroupDescription(_realGroupingPropNames[si]));
+				var t = _realGroupingProps[si - 1];
+				gd.Add(new PropertyGroupDescription(t.Name));
 				if (_hiddenCol != null)
 				{
 					_hiddenCol.Visibility = Visibility.Visible;
@@ -99,12 +108,29 @@ namespace Maintance.TableAutomation.Views
 
 		private void FilteringChanged(object sender, TextChangedEventArgs e)
 		{
-			if (FilterBy_CB.SelectedIndex < 1) return;
-			if (!string.IsNullOrEmpty(FilterBy_TB.Text))
+			if (_currentFilteringProperty == null) return;
+			var filterText = FilterBy_TB.Text;
+			if (!string.IsNullOrEmpty(filterText))
 			{
-				_entitiesView.Filter = x =>
-				x.GetType().GetProperty(_realFilteringPropNames[FilterBy_CB.SelectedIndex])!.GetValue(x)!.ToString()!
-				.Equals(FilterBy_TB.Text);
+				if (_enumFilterValues != null)
+				{
+					_entitiesView.Filter = x =>
+						{
+							if (_enumFilterValues.TryGetValue((int)_currentFilteringProperty.GetValue(x)!, out var str))
+							{
+								return str.Contains(filterText, StringComparison.OrdinalIgnoreCase);
+							}
+							return false;
+						};
+				}
+				else
+				{
+					_entitiesView.Filter = x =>
+						_currentFilteringProperty
+							.GetValue(x)?
+							.ToString()?
+							.Contains(filterText, StringComparison.OrdinalIgnoreCase) == true;
+				}
 			}
 			else
 			{
@@ -115,8 +141,23 @@ namespace Maintance.TableAutomation.Views
 		private readonly DoubleAnimation _changeFilterTBWidth = new(100, TimeSpan.FromSeconds(0.5));
 		private void FilterBy_CB_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			var fp = (string)e.AddedItems[0]!;
-			_changeFilterTBWidth.To = string.IsNullOrEmpty(fp) ? 0 : 100;
+			var index = FilterBy_CB.SelectedIndex;
+			if (index < 1)
+			{
+				_changeFilterTBWidth.To = 0;
+				_currentFilteringProperty = null;
+				_entitiesView.Filter = null;
+				FilterBy_TB.Clear();
+				_enumFilterValues = null;
+			}
+			else
+			{
+				_changeFilterTBWidth.To = 100;
+				_currentFilteringProperty = _realFilteringProps[index - 1];
+				_enumFilterValues = _currentFilteringProperty.PropertyType.IsEnum
+					? AutomationHelper.GetEnumDescriptions(_currentFilteringProperty.PropertyType)
+					: null;
+			}
 			FilterBy_TB.BeginAnimation(TextBox.WidthProperty, _changeFilterTBWidth);
 		}
 	}

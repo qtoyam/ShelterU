@@ -44,5 +44,19 @@ namespace Maintance.TableAutomation
 				yield return new(prop, pia, vca, sca);
 			}
 		}
+
+		public static IReadOnlyDictionary<int, string> GetEnumDescriptions(Type enumType)
+		{
+			Dictionary<int, string> enumStrDict = new();
+			foreach (var field in enumType.GetFields())
+			{
+				var attrs = field.GetCustomAttributes(typeof(DescriptionAttribute), false);
+				if (attrs.Length > 0 && attrs[0] is DescriptionAttribute attr && field.GetRawConstantValue() is int rawV)
+				{
+					enumStrDict.Add(rawV, attr.Description);
+				}
+			}
+			return enumStrDict;
+		}
 	}
 }

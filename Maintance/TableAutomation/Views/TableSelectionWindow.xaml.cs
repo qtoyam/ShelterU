@@ -17,7 +17,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-
+using Maintance.Converters;
 using Maintance.TableAutomation.Models;
 
 namespace Maintance.TableAutomation.Views
@@ -29,6 +29,7 @@ namespace Maintance.TableAutomation.Views
 	{
 		private readonly List<PropertyInfo> _filteringProperties;
 		private readonly ICollectionView _entityViews;
+		private readonly ITableManager _tableManager;
 		private bool _isSelected = false;
 
 		public TableSelectionWindow(ITableManager tableManager)
@@ -36,17 +37,24 @@ namespace Maintance.TableAutomation.Views
 			InitializeComponent();
 			var cols = DB_grid.Columns;
 			_filteringProperties = new();
-			foreach (var vcp in tableManager.TableColumnInfos)
+			_tableManager = tableManager;
+			foreach (var vcp in _tableManager.TableColumnInfos)
 			{
 				if (vcp.SelectionColumnAttribute == null) continue;
+				Binding b = new(vcp.PropertyInfo.Name)
+				{
+					Mode = BindingMode.OneWay
+				};
+				if (vcp.PropertyInfo.PropertyType.IsEnum)
+				{
+					b.Converter = new EnumToStrConverter(AutomationHelper.GetEnumDescriptions(vcp.PropertyInfo.PropertyType),
+						vcp.PropertyInfo.PropertyType);
+				}
 				cols.Add(
 					new MaterialDesignThemes.Wpf.DataGridTextColumn
 					{
 						Header = vcp.PropertyInfoAttribute.DisplayName,
-						Binding = new Binding(vcp.PropertyInfo.Name)
-						{
-							Mode = BindingMode.OneWay,
-						},
+						Binding = b,
 						IsReadOnly = true
 					});
 				if (vcp.SelectionColumnAttribute.IsFilter)
@@ -55,7 +63,7 @@ namespace Maintance.TableAutomation.Views
 				}
 			}
 
-			_entityViews = tableManager.CreateCollectionView();
+			_entityViews = _tableManager.CreateCollectionView();
 			DB_grid.ItemsSource = _entityViews;
 		}
 
@@ -67,7 +75,7 @@ namespace Maintance.TableAutomation.Views
 
 		private void CreateBtnClick(object sender, RoutedEventArgs e)
 		{
-			throw new NotImplementedException();
+			_tableManager.TryCreateEntity(this);
 		}
 
 		private void CancelBtnClick(object sender, RoutedEventArgs e)
@@ -84,7 +92,7 @@ namespace Maintance.TableAutomation.Views
 				{
 					foreach(var p in _filteringProperties)
 					{
-						if(p.GetValue(entity)?.ToString() == FilterTb.Text)
+						if(p.GetValue(entity)?.ToString()?.Contains(FilterTb.Text) == true)
 						{
 							return true;
 						}

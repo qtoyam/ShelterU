@@ -36,11 +36,11 @@ namespace Maintance.TableAutomation
 	public sealed class TableManager<T> : ITableManager
 		where T : class, new()
 	{
-		private readonly IDbContextFactory<ShelterContext> _dbContextFactory;
+		private readonly DbContext _dbContext;
 		private readonly IMessageService _ims;
 		private readonly TableManagerSelector _tableManagerSelector;
 		private readonly SynchronizationContext _synchronizationContext;
-		private ShelterContext? _currentContext;
+		private readonly SemaphoreSlim _semaphore;
 
 		public IReadOnlyCollection<TableColumnInfo> TableColumnInfos { get; } =
 			new ReadOnlyCollection<TableColumnInfo>(AutomationHelper.GetTableColumnInfos<T>().ToList());
@@ -49,30 +49,35 @@ namespace Maintance.TableAutomation
 
 		public ICollectionView CreateCollectionView() => new CollectionViewSource() { Source = _currentEntities }.View;
 
-		public TableManager(IDbContextFactory<ShelterContext> dbContextFactory, IMessageService ims, TableManagerSelector tableManagerSelector, SynchronizationContext synchronizationContext)
+		public TableManager(DbContext dbContext, IMessageService ims, TableManagerSelector tableManagerSelector,
+			SynchronizationContext synchronizationContext, SemaphoreSlim semaphore)
 		{
-			_dbContextFactory = dbContextFactory;
 			_ims = ims;
 			_tableManagerSelector = tableManagerSelector;
 			_synchronizationContext = synchronizationContext;
+			_dbContext = dbContext;
+			_semaphore = semaphore;
 			Task.Run(async () =>
 			{
 				try
 				{
-					await using (var context = await _dbContextFactory.CreateDbContextAsync())
+					await _semaphore.WaitAsync();
+					await foreach (var ent in _dbContext.Set<T>().AsAsyncEnumerable())
 					{
-						foreach (var ent in context.Set<T>())
-						{
-							synchronizationContext.Post(
-								 (o) =>
-								 _currentEntities.Add(ent),
-								 null);
-						}
+						synchronizationContext.Post(
+							 (o) =>
+							 _currentEntities.Add(ent),
+							 null);
 					}
+
 				}
 				catch (Exception ex)
 				{
 					_ims.SendError(ex.Message);
+				}
+				finally
+				{
+					_semaphore.Release();
 				}
 			});
 		}
@@ -118,19 +123,20 @@ namespace Maintance.TableAutomation
 			if (_workingEntity == null) return false;
 			try
 			{
-				await using (var context = await _dbContextFactory.CreateDbContextAsync())
-				{
-					var set = context.Set<T>();
-					await set.AddAsync(_workingEntity);
-					await context.SaveChangesAsync();
-					_currentEntities.Add(_workingEntity);
-				}
+				await _semaphore.WaitAsync();
+				var set = _dbContext.Set<T>();
+				await set.AddAsync(_workingEntity);
+				await _dbContext.SaveChangesAsync();
 				return true;
 			}
 			catch (Exception ex)
 			{
 				_ims.SendException(ex);
 				return false;
+			}
+			finally
+			{
+				_semaphore.Release();
 			}
 		}
 

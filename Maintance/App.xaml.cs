@@ -48,10 +48,12 @@ namespace Maintance
 				.AddSingleton<IMessageService, EventMessageService>()
 				.AddSingleton<MainWindow>()
 				.AddSingleton<SynchronizationContext>(new DispatcherSynchronizationContext(Application.Current.Dispatcher))
-				.AddDbContextFactory<ShelterContext>(
-				  o => o.UseMySql("server=localhost;database=shelter;uid=root;pwd=zxc123",
-				  ServerVersion.Parse("8.0.27-mysql"))
-				  )
+				//.AddDbContextFactory<ShelterContext>(
+				//  o => o.UseMySql("server=localhost;database=shelter;uid=root;pwd=zxc123",
+				//  ServerVersion.Parse("8.0.27-mysql"))
+				//  )
+				.AddSingleton<DbContext, ShelterContext>()
+				.AddSingleton<SemaphoreSlim>((s) => new(1))
 				.BuildServiceProvider(
 #if DEBUG
 				new ServiceProviderOptions() { ValidateOnBuild = true, ValidateScopes = true }

@@ -1,12 +1,25 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+
+using Microsoft.EntityFrameworkCore;
 
 namespace Maintance.DbModels
 {
 	public partial class ShelterContext : DbContext
 	{
+		public ShelterContext() : base()
+		{
+
+		}
+
 		public ShelterContext(DbContextOptions<ShelterContext> options)
 			: base(options)
 		{
+		}
+
+		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+		{
+			optionsBuilder.UseMySql(@"server=localhost;database=shelter;uid=root;pwd=zxc123;",
+				new MySqlServerVersion(new Version(8, 0, 27)));
 		}
 
 		public virtual DbSet<Animal> Animals { get; set; } = null!;
@@ -68,7 +81,7 @@ namespace Maintance.DbModels
 					.HasConstraintName("animal_ibfk_1");
 
 				//mine
-				//entity.Navigation(e => e.Breed).AutoInclude();
+				entity.Navigation(e => e.Breed).AutoInclude();
 			});
 
 			modelBuilder.Entity<AnimalMovement>(entity =>
