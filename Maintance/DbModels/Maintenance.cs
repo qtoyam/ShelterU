@@ -1,41 +1,63 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using Maintance.TableAutomation.DbModelAttributes;
 using Maintance.TableAutomation.Models;
 
 namespace Maintance.DbModels
 {
-    public partial class Maintenance
-    {
+	[TableInfo("Кто?")]
+	public partial class Maintenance : IDBModel
+	{
 
-		[ViewColumn("Id", false, false)]
+		[PropertyInfo(displayName: "", isAutofoFill: true, isOptional: false)]
+		[ViewColumn(isFilter: true, isGroup: true)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public int MaintenanceId { get; set; }
 
-		[ViewColumn("Начало", false, false)]
+		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: false)]
+		[ViewColumn(isFilter: true, isGroup: true)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public DateOnly DateOfAction { get; set; }
 
-		[ViewColumn("Завершение", false, false)]
+		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: false)]
+		[ViewColumn(isFilter: true, isGroup: true)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public TimeOnly TimeOfAction { get; set; }
 
-		[ViewColumn("Проблема", false, false)]
+		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: true)]
+		[ViewColumn(isFilter: true, isGroup: true)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public bool? Problem { get; set; }
 
-		[ViewColumn("Комментарий", false, false)]
+		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: true)]
+		[ViewColumn(isFilter: true, isGroup: true)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public string? Comment { get; set; }
 
-		[ViewColumn("Расход реквизита", false, false)]
+		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: true)]
+		[ViewColumn(isFilter: true, isGroup: true)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public int? WasteOfResource { get; set; }
 
-		[ViewColumn("Животное", false, false)]
+		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: false)]
+		[ViewColumn(isFilter: true, isGroup: true)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public virtual Animal Animal { get; set; } = null!;
 
-		[ViewColumn("Сотрудник", false, false)]
+		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: false)]
+		[ViewColumn(isFilter: true, isGroup: true)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public virtual Employee Employee { get; set; } = null!;
 
-		[ViewColumn("Реквизит", false, false)]
+		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: false)]
+		[ViewColumn(isFilter: true, isGroup: true)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public virtual Provision Requisite { get; set; } = null!;
 
-		[ViewColumn("Тип", false, false)]
+		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: false)]
+		[ViewColumn(isFilter: true, isGroup: true)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public virtual TypeOfMaintenance TypeMain { get; set; } = null!;
 
 

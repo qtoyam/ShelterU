@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 
+using Maintance.TableAutomation.DbModelAttributes;
 using Maintance.TableAutomation.Models;
 
 namespace Maintance.DbModels
@@ -12,23 +13,37 @@ namespace Maintance.DbModels
             Animals = new HashSet<Animal>();
         }
 
-		[ViewColumn("Id", false, false, true, isSelectionVisible: true, isSelectionFilter: true)]
+		[PropertyInfo(displayName: "Id", isAutofoFill: true, isOptional: false)]
+		[ViewColumn(isFilter: true, isGroup: false)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public int BreedId { get; set; }
 
-		[ViewColumn("Название", false, false)]
+		[PropertyInfo(displayName: "Имя", isAutofoFill: false, isOptional: false)]
+		[ViewColumn(isFilter: true, isGroup: true)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public string Name { get; set; } = null!;
-        public int GenusId { get; set; }
 
-		[ViewColumn("Пол", false, false)]
+
+		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: false)]
+		[ViewColumn(isFilter: true, isGroup: true)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public string Gender { get; set; } = null!;
 		//TODO: enum
 
-		[ViewColumn("Описание", false, false)]
+		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: true)]
+		[ViewColumn(isFilter: true, isGroup: true)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public string? Description { get; set; }
 
-		[ViewColumn("Род", false, false)]
+		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: false)]
+		[ViewColumn(isFilter: true, isGroup: true)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public virtual Genus Genus { get; set; } = null!;
+
+		#region Hidden props
+		public int GenusId { get; set; }
         public virtual ICollection<Animal> Animals { get; set; }
+		#endregion //Hidden props
 
 		public override string ToString() => Name;
 	}

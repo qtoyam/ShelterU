@@ -42,10 +42,11 @@ namespace Maintance.TableAutomation.Views
 			_realGroupingPropNames = new() { "" };
 			foreach (var vcp in tableManager.TableColumnInfos)
 			{
+				if (vcp.ViewColumnAttribute == null) continue;
 				cols.Add(
 					new MaterialDesignThemes.Wpf.DataGridTextColumn()
 					{
-						Header = vcp.ViewColumnAttribute.ViewColumnName,
+						Header = vcp.PropertyInfoAttribute.DisplayName,
 						Binding = new Binding(vcp.PropertyInfo.Name)
 						{
 							Mode = BindingMode.OneWay,
@@ -54,15 +55,16 @@ namespace Maintance.TableAutomation.Views
 					});
 				if (vcp.ViewColumnAttribute.IsFilter)
 				{
-					filteringOptions.Add(vcp.ViewColumnAttribute.ViewColumnName);
+					filteringOptions.Add(vcp.PropertyInfoAttribute.DisplayName);
 					_realFilteringPropNames.Add(vcp.PropertyInfo.Name);
 				}
 				if (vcp.ViewColumnAttribute.IsGroup)
 				{
-					groupingOptions.Add(vcp.ViewColumnAttribute.ViewColumnName);
+					groupingOptions.Add(vcp.PropertyInfoAttribute.DisplayName);
 					_realGroupingPropNames.Add(vcp.PropertyInfo.Name);
 					_groupLinkedColumns.Add(cols.Last());
 				}
+
 			}
 			FilterBy_CB.ItemsSource = filteringOptions;
 			GroupBy_CB.ItemsSource = groupingOptions;

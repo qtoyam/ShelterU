@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
@@ -38,6 +39,8 @@ namespace Maintance.TableAutomation
 		private readonly IDbContextFactory<ShelterContext> _dbContextFactory;
 		private readonly IMessageService _ims;
 		private readonly TableManagerSelector _tableManagerSelector;
+		private readonly SynchronizationContext _synchronizationContext;
+		private ShelterContext? _currentContext;
 
 		public IReadOnlyCollection<TableColumnInfo> TableColumnInfos { get; } =
 			new ReadOnlyCollection<TableColumnInfo>(AutomationHelper.GetTableColumnInfos<T>().ToList());
@@ -46,11 +49,32 @@ namespace Maintance.TableAutomation
 
 		public ICollectionView CreateCollectionView() => new CollectionViewSource() { Source = _currentEntities }.View;
 
-		public TableManager(IDbContextFactory<ShelterContext> dbContextFactory, IMessageService ims, TableManagerSelector tableManagerSelector)
+		public TableManager(IDbContextFactory<ShelterContext> dbContextFactory, IMessageService ims, TableManagerSelector tableManagerSelector, SynchronizationContext synchronizationContext)
 		{
 			_dbContextFactory = dbContextFactory;
 			_ims = ims;
 			_tableManagerSelector = tableManagerSelector;
+			_synchronizationContext = synchronizationContext;
+			Task.Run(async () =>
+			{
+				try
+				{
+					await using (var context = await _dbContextFactory.CreateDbContextAsync())
+					{
+						foreach (var ent in context.Set<T>())
+						{
+							synchronizationContext.Post(
+								 (o) =>
+								 _currentEntities.Add(ent),
+								 null);
+						}
+					}
+				}
+				catch (Exception ex)
+				{
+					_ims.SendError(ex.Message);
+				}
+			});
 		}
 
 		#region Table view page
@@ -64,19 +88,6 @@ namespace Maintance.TableAutomation
 			{
 				TryCreateEntity(Application.Current.MainWindow);
 			};
-			res.IsEnabled = false;
-			Task.Run(async () =>
-			{
-				await using (var context = await _dbContextFactory.CreateDbContextAsync())
-				{
-					foreach (var ent in context.Set<T>())
-					{
-						res.Dispatcher.Invoke(
-							() => _currentEntities.Add(ent));
-					}
-				}
-				res.Dispatcher.Invoke(() => res.IsEnabled = true);
-			});
 			return res;
 		}
 		#endregion //Table view page

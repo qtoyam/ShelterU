@@ -68,7 +68,7 @@ namespace Maintance.DbModels
 					.HasConstraintName("animal_ibfk_1");
 
 				//mine
-				entity.Navigation(e => e.Breed).AutoInclude();
+				//entity.Navigation(e => e.Breed).AutoInclude();
 			});
 
 			modelBuilder.Entity<AnimalMovement>(entity =>

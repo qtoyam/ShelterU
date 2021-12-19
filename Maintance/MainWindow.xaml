@@ -81,7 +81,7 @@
 				</ListView>
 
 				<Border x:Name="Border_content" Grid.Column="1" Background="{StaticResource Gray1}">
-					<Frame x:Name="FrameView" Margin="20"/>
+					<Frame x:Name="FrameView" Margin="20" NavigationUIVisibility="Hidden"/>
 				</Border>
 			</Grid>
 		</Grid>

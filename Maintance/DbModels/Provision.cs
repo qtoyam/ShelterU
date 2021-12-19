@@ -1,44 +1,66 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using Maintance.TableAutomation.DbModelAttributes;
 using Maintance.TableAutomation.Models;
 
 namespace Maintance.DbModels
 {
-	public partial class Provision
-    {
+	[TableInfo("Продукты")]
+	public partial class Provision : IDBModel
+	{
         public Provision()
         {
             Maintenances = new HashSet<Maintenance>();
         }
 
 
-		[ViewColumn("Id", false, false)]
+		[PropertyInfo(displayName: "", isAutofoFill: true, isOptional: false)]
+		[ViewColumn(isFilter: true, isGroup: true)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public int RequisiteId { get; set; }
 
-		[ViewColumn("Назв", false, false)]
+		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: false)]
+		[ViewColumn(isFilter: true, isGroup: true)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public string Name { get; set; } = null!;
 
-		[ViewColumn("Кол-во", false, false)]
+		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: false)]
+		[ViewColumn(isFilter: true, isGroup: true)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public int Quantity { get; set; }
 
-		[ViewColumn("Произв.", false, false)]
+		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: true)]
+		[ViewColumn(isFilter: true, isGroup: true)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public string? Producer { get; set; }
 
-		[ViewColumn("Для кого", false, false)]
+		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: true)]
+		[ViewColumn(isFilter: true, isGroup: true)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public string? ForWhichAnimals { get; set; }
 
-		[ViewColumn("Годен до", false, false)]
+		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: true)]
+		[ViewColumn(isFilter: true, isGroup: true)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public DateOnly? ValidUntil { get; set; }
 
-		[ViewColumn("Описание", false, false)]
+		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: true)]
+		[ViewColumn(isFilter: true, isGroup: true)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public string? Description { get; set; }
 
-		[ViewColumn("Нужно купить", false, false)]
+		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: false)]
+		[ViewColumn(isFilter: true, isGroup: true)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public bool NeedToBuy { get; set; }
 
-		[ViewColumn("Тип", false, false)]
+		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: false)]
+		[ViewColumn(isFilter: true, isGroup: true)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public virtual TypeOfRequisite TypeReq { get; set; } = null!;
+
+
         public virtual ICollection<Maintenance> Maintenances { get; set; }
         public int TypeReqId { get; set; }
     }

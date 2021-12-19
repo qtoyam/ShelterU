@@ -10,6 +10,7 @@ using Maintance.TableAutomation.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Maintance.DbModels;
 using Maintance.TableAutomation.Views;
+using Maintance.TableAutomation.DbModelAttributes;
 
 namespace Maintance.Services
 {

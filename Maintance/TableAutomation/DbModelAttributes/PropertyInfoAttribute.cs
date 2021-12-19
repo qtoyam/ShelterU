@@ -5,13 +5,15 @@ namespace Maintance.TableAutomation.DbModelAttributes
 	[AttributeUsage(AttributeTargets.Property)]
 	public class PropertyInfoAttribute : Attribute
 	{
-		public readonly bool IsAutfoFill;
+		public readonly string DisplayName;
+		public readonly bool IsAutofoFill;
 		public readonly bool IsOptional;
 
-		public PropertyInfoAttribute(bool isAutfoFill, bool isOptional)
+		public PropertyInfoAttribute(string displayName, bool isAutofoFill = false, bool isOptional = false)
 		{
-			IsAutfoFill = isAutfoFill;
+			IsAutofoFill = isAutofoFill;
 			IsOptional = isOptional;
+			DisplayName = displayName;
 		}
 	}
 }

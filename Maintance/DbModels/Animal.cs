@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
-using Maintance.TableAutomation;
+using Maintance.TableAutomation.DbModelAttributes;
 using Maintance.TableAutomation.Models;
 
 namespace Maintance.DbModels
@@ -18,35 +16,58 @@ namespace Maintance.DbModels
 			Treatments = new HashSet<Treatment>();
 		}
 
-		[ViewColumn("Id", true, false, true)]
+		[PropertyInfo(displayName: "Id", isAutofoFill: true, isOptional: false)]
+		[ViewColumn(isFilter: true, isGroup: false)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public int AnimalId { get; set; }
 
-		[ViewColumn("Кличка", true, false)]
+		[PropertyInfo(displayName: "Кличка", isAutofoFill: false, isOptional: false)]
+		[ViewColumn(isFilter: true, isGroup: false)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public string Name { get; set; } = null!;
 
-		[ViewColumn("Возраст", true, true)]
+		[PropertyInfo(displayName: "Возраст", isAutofoFill: false, isOptional: true)]
+		[ViewColumn(isFilter: true, isGroup: true)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public sbyte? Age { get; set; }
-		public int BreedId { get; set; }
 
-		[ViewColumn("Дата рождения", true, false)]
+		[PropertyInfo(displayName: "Дата рождения", isAutofoFill: false, isOptional: true)]
+		[ViewColumn(isFilter: true, isGroup: false)]
 		public DateOnly? Birthday { get; set; }
 
-		[ViewColumn("Рост", true, false)]
+		[PropertyInfo(displayName: "Рост", isAutofoFill: false, isOptional: true)]
+		[ViewColumn(isFilter: false, isGroup: false)]
 		public decimal? Height { get; set; }
 
-		[ViewColumn("Вес", true, false)]
+		[PropertyInfo(displayName: "Вес", isAutofoFill: false, isOptional: true)]
+		[ViewColumn(isFilter: false, isGroup: false)]
 		public decimal? Weight { get; set; }
 
-		[ViewColumn("Дата прибытия", true, false)]
+		[PropertyInfo(displayName: "Прибытие", isAutofoFill: false, isOptional: false)]
+		[ViewColumn(isFilter: false, isGroup: false)]
 		public DateOnly GettingIntoShelter { get; set; } = DateOnly.FromDateTime(DateTime.Now);
 
-		[ViewColumn("Порода", true, true)]
-		public Breed Breed { get; set; } = null!;
+		[PropertyInfo(displayName: "Порода", isAutofoFill: false, isOptional: false)]
+		[ViewColumn(isFilter: true, isGroup: true)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
+		public virtual Breed Breed
+		{
+			get => _breed;
+			set
+			{
+				_breed = value;
+				BreedId = _breed.BreedId;
+			}
+		}
+
+		private Breed _breed=null!;
+
+		public int BreedId { get; set; }
 		public virtual ICollection<AnimalMovement> AnimalMovements { get; set; }
 		public virtual ICollection<Cage> Cages { get; set; }
 		public virtual ICollection<Maintenance> Maintenances { get; set; }
 		public virtual ICollection<Treatment> Treatments { get; set; }
 
-		public override string ToString() => Name + "" + GettingIntoShelter.ToString();
+		public override string ToString() => Name;
 	}
 }

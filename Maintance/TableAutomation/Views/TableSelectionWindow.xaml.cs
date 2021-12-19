@@ -36,27 +36,27 @@ namespace Maintance.TableAutomation.Views
 			InitializeComponent();
 			var cols = DB_grid.Columns;
 			_filteringProperties = new();
-			foreach (var vcp in tableManager.TableColumnInfos.Where(x=>x.ViewColumnAttribute.IsSelectionVisible))
+			foreach (var vcp in tableManager.TableColumnInfos)
 			{
+				if (vcp.SelectionColumnAttribute == null) continue;
 				cols.Add(
 					new MaterialDesignThemes.Wpf.DataGridTextColumn
 					{
-						Header = vcp.ViewColumnAttribute.ViewColumnName,
+						Header = vcp.PropertyInfoAttribute.DisplayName,
 						Binding = new Binding(vcp.PropertyInfo.Name)
 						{
 							Mode = BindingMode.OneWay,
 						},
 						IsReadOnly = true
 					});
-				if (vcp.ViewColumnAttribute.IsSelectionFilter)
+				if (vcp.SelectionColumnAttribute.IsFilter)
 				{
 					_filteringProperties.Add(vcp.PropertyInfo);
 				}
 			}
-			DB_grid.ItemsSource = _entityViews;
-
 
 			_entityViews = tableManager.CreateCollectionView();
+			DB_grid.ItemsSource = _entityViews;
 		}
 
 		private void SelectBtnClick(object sender, RoutedEventArgs e)

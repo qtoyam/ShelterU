@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Windows.Data;
 using System.Reflection;
 using Maintance.TableAutomation.Models;
+using Maintance.TableAutomation.DbModelAttributes;
 
 namespace Maintance.TableAutomation
 {
@@ -17,11 +18,30 @@ namespace Maintance.TableAutomation
 		{
 			foreach (var prop in typeof(T).GetProperties())
 			{
-				var attrs = prop.GetCustomAttributes(typeof(ViewColumnAttribute), true);
-				if (attrs.Length > 0)
+				PropertyInfoAttribute? pia = null;
+				ViewColumnAttribute? vca = null;
+				SelectionColumnAttribute? sca = null;
+				foreach (var attr in prop.GetCustomAttributes(true))
 				{
-					yield return new(prop, (ViewColumnAttribute)attrs[0]);
+					if(attr is PropertyInfoAttribute piat)
+					{
+						pia = piat;
+					}
+					else if(attr is SelectionColumnAttribute scat)
+					{
+						sca = scat;
+					}
+					else if (attr is ViewColumnAttribute vcat)
+					{
+						vca = vcat;
+					}
 				}
+				if (pia == null) continue;
+				if (string.IsNullOrEmpty(pia.DisplayName))
+				{
+					pia = new(prop.Name, pia.IsAutofoFill, pia.IsOptional);
+				}
+				yield return new(prop, pia, vca, sca);
 			}
 		}
 	}

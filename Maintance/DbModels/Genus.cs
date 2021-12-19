@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 
+using Maintance.TableAutomation.DbModelAttributes;
 using Maintance.TableAutomation.Models;
 
 namespace Maintance.DbModels
 {
-    public partial class Genus
-    {
+	[TableInfo("Роды)")]
+	public partial class Genus : IDBModel
+	{
         public Genus()
         {
             Breeds = new HashSet<Breed>();
@@ -13,10 +15,14 @@ namespace Maintance.DbModels
             Typeofrequisites = new HashSet<TypeOfRequisite>();
         }
 
-		[ViewColumn("Id", false, false)]
+		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: true)]
+		[ViewColumn(isFilter: true, isGroup: true)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public int GenusId { get; set; }
 
-		[ViewColumn("Название", false, false)]
+		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: false)]
+		[ViewColumn(isFilter: true, isGroup: true)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public string Name { get; set; } = null!;
 
         public virtual ICollection<Breed> Breeds { get; set; }

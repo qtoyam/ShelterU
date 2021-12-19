@@ -5,8 +5,10 @@ using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 
 using Maintance.DbModels;
 using Maintance.Services;
@@ -45,6 +47,7 @@ namespace Maintance
 			_serviceProvider = services
 				.AddSingleton<IMessageService, EventMessageService>()
 				.AddSingleton<MainWindow>()
+				.AddSingleton<SynchronizationContext>(new DispatcherSynchronizationContext(Application.Current.Dispatcher))
 				.AddDbContextFactory<ShelterContext>(
 				  o => o.UseMySql("server=localhost;database=shelter;uid=root;pwd=zxc123",
 				  ServerVersion.Parse("8.0.27-mysql"))

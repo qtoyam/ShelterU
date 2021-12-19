@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using Maintance.TableAutomation.DbModelAttributes;
 using Maintance.TableAutomation.Models;
 
 namespace Maintance.DbModels
 {
-	public partial class Employee
-    {
+	[TableInfo("Сотрудники")]
+	public partial class Employee : IDBModel
+	{
         public Employee()
         {
             Maintenances = new HashSet<Maintenance>();
@@ -14,39 +16,62 @@ namespace Maintance.DbModels
             Visits = new HashSet<Visit>();
         }
 
-		[ViewColumn("Id", false, false)]
+		[PropertyInfo(displayName: "", isAutofoFill: true, isOptional: false)]
+		[ViewColumn(isFilter: true, isGroup: true)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public int EmployeeId { get; set; }
 
-		[ViewColumn("Имя", false, false)]
+		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: false)]
+		[ViewColumn(isFilter: true, isGroup: true)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public string FirstName { get; set; } = null!;
 
-		[ViewColumn("Фамилия", false, false)]
+		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: false)]
+		[ViewColumn(isFilter: true, isGroup: true)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public string LastName { get; set; } = null!;
 
-		[ViewColumn("Отчество", false, false)]
+		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: true)]
+		[ViewColumn(isFilter: true, isGroup: true)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public string? MiddleName { get; set; }
-        public int PostId { get; set; }
 
-		[ViewColumn("Стаж", false, false)]
+		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: true)]
+		[ViewColumn(isFilter: true, isGroup: true)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public sbyte? Seniority { get; set; }
 
-		[ViewColumn("Дата рождения", false, false)]
+		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: false)]
+		[ViewColumn(isFilter: true, isGroup: true)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public DateOnly Birthday { get; set; }
 
-		[ViewColumn("Телефон", false, false)]
+		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: false)]
+		[ViewColumn(isFilter: true, isGroup: true)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public string Contact { get; set; } = null!;
 
-		[ViewColumn("Пол", false, false)]
+		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: false)]
+		[ViewColumn(isFilter: true, isGroup: true)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public string Gender { get; set; } = null!;
 		//TODO: enum
 
-		[ViewColumn("Паспорт", false, false)]
+		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: false)]
+		[ViewColumn(isFilter: true, isGroup: true)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public string Document { get; set; } = null!;
 
-		[ViewColumn("Должность", false, false)]
+		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: false)]
+		[ViewColumn(isFilter: true, isGroup: true)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
 		public virtual Post Post { get; set; } = null!;
-        public virtual ICollection<Maintenance> Maintenances { get; set; }
+
+		#region Hidden props
+        public int PostId { get; set; }
+		public virtual ICollection<Maintenance> Maintenances { get; set; }
         public virtual ICollection<Timetable> Timetables { get; set; }
         public virtual ICollection<Visit> Visits { get; set; }
-    }
+		#endregion //Hidden props
+	}
 }

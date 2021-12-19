@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Maintance.TableAutomation.Models
+namespace Maintance.TableAutomation.DbModelAttributes
 {
 	[AttributeUsage(AttributeTargets.Class)]
 	internal class TableInfoAttribute : Attribute
