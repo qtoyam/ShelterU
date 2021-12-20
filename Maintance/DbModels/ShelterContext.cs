@@ -1,25 +1,42 @@
 ﻿using System;
+using System.Data.Common;
 
 using Microsoft.EntityFrameworkCore;
+
+using MySqlConnector;
 
 namespace Maintance.DbModels
 {
 	public partial class ShelterContext : DbContext
 	{
-		public ShelterContext() : base()
-		{
+		private readonly string _connection;
+		internal readonly string _username;
+		internal string _pass;
 
-		}
-
-		public ShelterContext(DbContextOptions<ShelterContext> options)
-			: base(options)
+		public ShelterContext(string user, string pass) : base()
 		{
+			_connection = @$"server=localhost;database=shelter;uid={user};pwd={pass};";
+			_username = user;
+			_pass = pass;
 		}
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
-			optionsBuilder.UseMySql(@"server=localhost;database=shelter;uid=root;pwd=zxc123;",
+			optionsBuilder.UseMySql(_connection,
 				new MySqlServerVersion(new Version(8, 0, 27)));
+		}
+
+		internal void ChangePassword(string newPass)
+		{
+			using (var cmd = this.Database.GetDbConnection().CreateCommand())
+			{
+				cmd.CommandType = System.Data.CommandType.Text;
+				cmd.CommandText = @$"ALTER USER '{_username}'@'localhost' IDENTIFIED BY '{newPass}';";
+				cmd.ExecuteNonQuery();
+				//cmd.CommandText = "FLUSH PRIVILEGES;";
+				//cmd.ExecuteNonQuery();
+				_pass = newPass;
+			}
 		}
 
 		public virtual DbSet<Animal> Animals { get; set; } = null!;
@@ -135,6 +152,9 @@ namespace Maintance.DbModels
 					.HasForeignKey(d => d.VisitorId)
 					.OnDelete(DeleteBehavior.ClientSetNull)
 					.HasConstraintName("animal_movement_ibfk_2");
+
+				entity.Navigation(e => e.Animal).AutoInclude();
+				entity.Navigation(e => e.Visitor).AutoInclude();
 			});
 
 			modelBuilder.Entity<Breed>(entity =>
@@ -164,6 +184,8 @@ namespace Maintance.DbModels
 					.HasForeignKey(d => d.GenusId)
 					.OnDelete(DeleteBehavior.ClientSetNull)
 					.HasConstraintName("fk_breed_Genus1");
+
+				entity.Navigation(e => e.Genus).AutoInclude();
 			});
 
 			modelBuilder.Entity<Cage>(entity =>
@@ -197,6 +219,9 @@ namespace Maintance.DbModels
 					.HasForeignKey(d => d.GenusId)
 					.OnDelete(DeleteBehavior.ClientSetNull)
 					.HasConstraintName("fk_Cage_Genus1");
+
+				entity.Navigation(e => e.Animal).AutoInclude();
+				entity.Navigation(e => e.Genus).AutoInclude();
 			});
 
 			modelBuilder.Entity<Clinic>(entity =>
@@ -275,6 +300,8 @@ namespace Maintance.DbModels
 					.HasForeignKey(d => d.PostId)
 					.OnDelete(DeleteBehavior.ClientSetNull)
 					.HasConstraintName("employee_ibfk_1");
+
+				entity.Navigation(e => e.Post).AutoInclude();
 			});
 
 			modelBuilder.Entity<Genus>(entity =>
@@ -357,6 +384,11 @@ namespace Maintance.DbModels
 					.HasForeignKey(d => d.TypeMainId)
 					.OnDelete(DeleteBehavior.ClientSetNull)
 					.HasConstraintName("fk_maintenance_typeofmaintenance1");
+
+				entity.Navigation(e => e.Animal).AutoInclude();
+				entity.Navigation(e => e.Employee).AutoInclude();
+				entity.Navigation(e => e.Requisite).AutoInclude();
+				entity.Navigation(e => e.TypeMain).AutoInclude();
 			});
 
 			modelBuilder.Entity<Post>(entity =>
@@ -417,6 +449,8 @@ namespace Maintance.DbModels
 					.HasForeignKey(d => d.TypeReqId)
 					.OnDelete(DeleteBehavior.ClientSetNull)
 					.HasConstraintName("fk_provision_typeofrequisite1");
+
+				entity.Navigation(e => e.TypeReq).AutoInclude();
 			});
 
 			modelBuilder.Entity<Timetable>(entity =>
@@ -452,6 +486,9 @@ namespace Maintance.DbModels
 					.HasForeignKey(d => d.TimetId)
 					.OnDelete(DeleteBehavior.ClientSetNull)
 					.HasConstraintName("timetable_ibfk_2");
+
+				entity.Navigation(e => e.Employee).AutoInclude();
+				entity.Navigation(e => e.Timet).AutoInclude();
 			});
 
 			modelBuilder.Entity<Treatment>(entity =>
@@ -501,6 +538,9 @@ namespace Maintance.DbModels
 					.HasForeignKey(d => d.ClinicId)
 					.OnDelete(DeleteBehavior.ClientSetNull)
 					.HasConstraintName("treatment_ibfk_1");
+
+				entity.Navigation(e => e.Clinic).AutoInclude();
+				entity.Navigation(e => e.Animal).AutoInclude();
 			});
 
 			modelBuilder.Entity<TypeOfMaintenance>(entity =>
@@ -547,6 +587,8 @@ namespace Maintance.DbModels
 					.HasForeignKey(d => d.GenusId)
 					.OnDelete(DeleteBehavior.ClientSetNull)
 					.HasConstraintName("typeofrequisite_ibfk_1");
+
+				entity.Navigation(e => e.Genus).AutoInclude();
 			});
 
 			modelBuilder.Entity<Visit>(entity =>
@@ -589,6 +631,10 @@ namespace Maintance.DbModels
 					.HasForeignKey(d => d.VisitorId)
 					.OnDelete(DeleteBehavior.ClientSetNull)
 					.HasConstraintName("visit_ibfk_1");
+
+				entity.Navigation(e => e.Visitor).AutoInclude();
+				entity.Navigation(e => e.ResponsEmployeeNavigation).AutoInclude();
+
 			});
 
 			modelBuilder.Entity<Visitor>(entity =>

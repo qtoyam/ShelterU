@@ -11,7 +11,7 @@ namespace Maintance.DbModels
         }
 
         public int TimetId { get; set; }
-        public string DayOfWeek { get; set; } = null!;
+        public WeekDay DayOfWeek { get; set; }
         public TimeOnly Beginning { get; set; }
         public TimeOnly Ending { get; set; }
         public sbyte? Hours { get; set; }

@@ -31,35 +31,18 @@ namespace Maintance
 	public partial class App : Application
 	{
 		//TODO: navigation HEADER AXAXAXA
-		private readonly ServiceProvider _serviceProvider;
+		private ServiceProvider? _serviceProvider;
 
 		public App()
 		{
 			this.ShutdownMode = ShutdownMode.OnExplicitShutdown;
-			//this.Dispatcher.UnhandledException += Dispatcher_UnhandledException;
+			this.Dispatcher.UnhandledException += Dispatcher_UnhandledException;
+
 			Log.Logger = new LoggerConfiguration()
 				.MinimumLevel.Verbose()
 				.WriteTo.Debug()
 				//.WriteTo.File(@"logs\log.txt")
 				.CreateLogger();
-			ServiceCollection services = new();
-			TableManagerSelector tms = new(services);
-			_serviceProvider = services
-				.AddSingleton<IMessageService, EventMessageService>()
-				.AddSingleton<MainWindow>()
-				.AddSingleton<SynchronizationContext>(new DispatcherSynchronizationContext(Application.Current.Dispatcher))
-				//.AddDbContextFactory<ShelterContext>(
-				//  o => o.UseMySql("server=localhost;database=shelter;uid=root;pwd=zxc123",
-				//  ServerVersion.Parse("8.0.27-mysql"))
-				//  )
-				.AddSingleton<DbContext, ShelterContext>()
-				.AddSingleton<SemaphoreSlim>((s) => new(1))
-				.BuildServiceProvider(
-#if DEBUG
-				new ServiceProviderOptions() { ValidateOnBuild = true, ValidateScopes = true }
-#endif
-				);
-			tms.EnableSelecting(_serviceProvider);
 
 		}
 
@@ -70,6 +53,49 @@ namespace Maintance
 
 		protected override void OnStartup(StartupEventArgs e)
 		{
+			var loginWin = new Views.LoginWindow();
+			loginWin.ShowDialog();
+			if (loginWin.Context == null)
+			{
+				Application.Current.Shutdown(4);
+				return;
+			}
+			if (loginWin.Role == null)
+			{
+				loginWin.Context.Dispose();
+				Application.Current.Shutdown(8);
+				return;
+			}
+			ServiceCollection services = new();
+			TableManagerSelector tms;
+			if (loginWin.Role.Contains("admin"))
+			{
+				tms = new(services, typeof(IDBModelAdmin));
+			}
+			else if (loginWin.Role.Contains("animal_worker"))
+			{
+				tms = new(services, typeof(IDBModel));
+			}
+			else
+			{
+				MessageBox.Show($"Неизвестная роль: {loginWin.Role}");
+				Application.Current.Shutdown(16);
+				return;
+			}
+			var context = loginWin.Context;
+			loginWin = null;
+			_serviceProvider = services
+				.AddSingleton<IMessageService, EventMessageService>()
+				.AddSingleton<MainWindow>()
+				.AddSingleton<SynchronizationContext>(new DispatcherSynchronizationContext(Application.Current.Dispatcher))
+				.AddSingleton<DbContext, ShelterContext>((s) => context)
+				.AddSingleton<SemaphoreSlim>((s) => new(1))
+				.BuildServiceProvider(
+#if DEBUG
+				new ServiceProviderOptions() { ValidateOnBuild = true, ValidateScopes = true }
+#endif
+				);
+			tms.EnableSelecting(_serviceProvider);
 			_serviceProvider.GetRequiredService<MainWindow>().Show();
 			Log.Debug("App started.");
 			base.OnStartup(e);
@@ -79,10 +105,10 @@ namespace Maintance
 		{
 			//idk bd is disposed?
 			base.OnExit(e);
-			_serviceProvider.Dispose();
+			_serviceProvider?.Dispose();
 			Log.Debug("App exited.");
 			Log.CloseAndFlush();
-			//this.DispatcherUnhandledException -= Dispatcher_UnhandledException;
+			this.DispatcherUnhandledException -= Dispatcher_UnhandledException;
 		}
 	}
 }

@@ -17,6 +17,7 @@ using Maintance.DbModels;
 using Maintance.Services;
 using Maintance.TableAutomation;
 using Maintance.TableAutomation.Views;
+using Maintance.Views;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -25,6 +26,8 @@ using WPFCoreEx.Services;
 
 namespace Maintance
 {
+	public record NavigationItem(string Name, DrawingImage? Image);
+
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
@@ -32,15 +35,17 @@ namespace Maintance
 	{
 		private readonly EventMessageService _ems;
 		private readonly TableManagerSelector _tableManagerSelector;
+		private readonly DbContext sc;
 
-		public MainWindow(IMessageService ims, TableManagerSelector tableManagerSelector)
+		public MainWindow(IMessageService ims, TableManagerSelector tableManagerSelector, DbContext sc)
 		{
 			InitializeComponent();
 			_ems = (EventMessageService)ims;
 			_tableManagerSelector = tableManagerSelector;
-
+			this.sc = sc;
 			_ems.RegisterAllDefault(this);
-			Navigation_list.ItemsSource = _tableManagerSelector.TableNames;
+			Navigation_list.ItemsSource = _tableManagerSelector.TableNames.Select(x=>new NavigationItem(x, 
+				Application.Current.TryFindResource(x) as DrawingImage));
 		}
 
 		protected override void OnStateChanged(EventArgs e)
@@ -64,9 +69,14 @@ namespace Maintance
 
 		private void Navigation_list_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			FrameView.Content = e.AddedItems.Count > 0 && e.AddedItems[0] is string pn ?
-				_tableManagerSelector.GetViewPage(pn)
+			FrameView.Content = e.AddedItems.Count > 0 && e.AddedItems[0] is NavigationItem ni ?
+				_tableManagerSelector.GetViewPage(ni.Name)
 				: null;
+		}
+
+		private void Image_MouseDown(object sender, MouseButtonEventArgs e)
+		{
+			new ChangePasswordWindow((ShelterContext)sc).ShowDialog();
 		}
 	}
 }

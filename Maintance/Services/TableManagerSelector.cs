@@ -5,11 +5,8 @@ using System.Linq;
 using System.Windows.Controls;
 
 using Maintance.TableAutomation;
-using Maintance.TableAutomation.Models;
 
 using Microsoft.Extensions.DependencyInjection;
-using Maintance.DbModels;
-using Maintance.TableAutomation.Views;
 using Maintance.TableAutomation.DbModelAttributes;
 
 namespace Maintance.Services
@@ -22,14 +19,14 @@ namespace Maintance.Services
 
 		private readonly ReadOnlyCollection<Type> _tableTypes;
 
-		public TableManagerSelector(ServiceCollection sc)
+		public TableManagerSelector(ServiceCollection sc, Type searchingType)
 		{
 			var mtype = typeof(TableManager<>);
 			Collection<string> names = new();
 			Collection<Type> types = new();
 			foreach (var tableType in Assembly.GetCallingAssembly().GetTypes())
 			{
-				if (tableType.GetInterfaces().Contains(typeof(IDBModel)))
+				if (tableType.GetInterfaces().Contains(searchingType))
 				{
 					var tinfo = tableType.GetCustomAttribute<TableInfoAttribute>();
 					var genmtype = mtype.MakeGenericType(tableType);

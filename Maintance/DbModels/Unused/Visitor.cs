@@ -16,7 +16,7 @@ namespace Maintance.DbModels
         public string LastName { get; set; } = null!;
         public string Contact { get; set; } = null!;
         public DateOnly? Birthday { get; set; }
-        public string Status { get; set; } = null!;
+        public VisitorStatus Status { get; set; }
 
         public virtual ICollection<AnimalMovement> AnimalMovements { get; set; }
         public virtual ICollection<Visit> Visits { get; set; }

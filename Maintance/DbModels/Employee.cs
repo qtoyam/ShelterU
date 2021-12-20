@@ -54,7 +54,7 @@ namespace Maintance.DbModels
 		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: false)]
 		[ViewColumn(isFilter: true, isGroup: true)]
 		[SelectionColumn(isVisible: true, isFilter: true)]
-		public string Gender { get; set; } = null!;
+		public Gender Gender { get; set; }
 		//TODO: enum
 
 		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: false)]

@@ -27,10 +27,12 @@ namespace Maintance.TableAutomation.Views
 	/// </summary>
 	public partial class TableViewPage : Page
 	{
+		private readonly ITableManager _tableManager;
+		private readonly ICollectionView _entitiesView;
+
 		private readonly List<PropertyInfo> _realFilteringProps = new();
 		private readonly List<PropertyInfo> _realGroupingProps = new();
 		private readonly List<DataGridColumn> _groupLinkedColumns = new();
-		private readonly ICollectionView _entitiesView;
 
 		private PropertyInfo? _currentFilteringProperty;
 		private IReadOnlyDictionary<int, string>? _enumFilterValues;
@@ -38,11 +40,11 @@ namespace Maintance.TableAutomation.Views
 		public TableViewPage(ITableManager tableManager)
 		{
 			InitializeComponent();
-
+			_tableManager = tableManager;
 			var cols = DB_grid.Columns;
 			List<string> filteringOptions = new() { "" };
 			List<string> groupingOptions = new() { "" };
-			foreach (var vcp in tableManager.TableColumnInfos)
+			foreach (var vcp in _tableManager.TableColumnInfos)
 			{
 				if (vcp.ViewColumnAttribute == null) continue;
 				Binding b = new(vcp.PropertyInfo.Name)
@@ -77,7 +79,7 @@ namespace Maintance.TableAutomation.Views
 			FilterBy_CB.ItemsSource = filteringOptions;
 			GroupBy_CB.ItemsSource = groupingOptions;
 
-			_entitiesView = tableManager.CreateCollectionView();
+			_entitiesView = _tableManager.CreateCollectionView();
 			DB_grid.ItemsSource = _entitiesView;
 		}
 
@@ -139,6 +141,7 @@ namespace Maintance.TableAutomation.Views
 		}
 
 		private readonly DoubleAnimation _changeFilterTBWidth = new(100, TimeSpan.FromSeconds(0.5));
+
 		private void FilterBy_CB_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			var index = FilterBy_CB.SelectedIndex;
@@ -159,6 +162,34 @@ namespace Maintance.TableAutomation.Views
 					: null;
 			}
 			FilterBy_TB.BeginAnimation(TextBox.WidthProperty, _changeFilterTBWidth);
+		}
+
+		private void AddBtn_Click(object sender, RoutedEventArgs e)
+		{
+			this.IsEnabled = false;
+			_tableManager.TryCreateEntity(Application.Current.MainWindow);
+			this.IsEnabled = true;
+		}
+
+		private void EditBtn_Click(object sender, RoutedEventArgs e)
+		{
+			var selectedEntity = DB_grid.SelectedItem;
+			if (selectedEntity == null) return;
+			this.IsEnabled = false;
+			_tableManager.TryEditEntity(selectedEntity, Application.Current.MainWindow);
+			this._entitiesView.Refresh();
+			this.IsEnabled = true;
+		}
+
+		private async void DeleteBtn_Click(object sender, RoutedEventArgs e)
+		{
+			var selectedEntity = DB_grid.SelectedItem;
+			if (selectedEntity == null) return;
+			this.IsEnabled = false;
+
+			var res = await _tableManager.TryDeleteEntity(selectedEntity);
+			if (res == true) MessageBox.Show($"Удалено: {selectedEntity}");
+			this.IsEnabled = true;
 		}
 	}
 }

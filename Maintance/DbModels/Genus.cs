@@ -15,7 +15,7 @@ namespace Maintance.DbModels
             Typeofrequisites = new HashSet<TypeOfRequisite>();
         }
 
-		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: true)]
+		[PropertyInfo(displayName: "", isAutofoFill: true, isOptional: false)]
 		[ViewColumn(isFilter: true, isGroup: true)]
 		[SelectionColumn(isVisible: true, isFilter: true)]
 		public int GenusId { get; set; }
@@ -28,5 +28,7 @@ namespace Maintance.DbModels
         public virtual ICollection<Breed> Breeds { get; set; }
         public virtual ICollection<Cage> Cages { get; set; }
         public virtual ICollection<TypeOfRequisite> Typeofrequisites { get; set; }
-    }
+
+		public override string ToString() => Name;
+	}
 }

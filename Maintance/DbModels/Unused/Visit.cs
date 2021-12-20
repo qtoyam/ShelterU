@@ -8,7 +8,7 @@ namespace Maintance.DbModels
         public int NumberOfVisit { get; set; }
         public int VisitorId { get; set; }
         public DateTime DateOfVisit { get; set; }
-        public string Goal { get; set; } = null!;
+        public VisitGoal Goal { get; set; }
         public int ResponsEmployee { get; set; }
         public string? Result { get; set; }
 

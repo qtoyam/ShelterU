@@ -10,7 +10,9 @@
 		x:Name="Window"
         Title="TableSelectionWindow" Width="500"
 		Background="{DynamicResource Gray1}"
-		SizeToContent="Height">
+		SizeToContent="WidthAndHeight"
+		ShowInTaskbar="False"
+		MaxWidth="1000">
 	<WindowChrome.WindowChrome>
 		<WindowChrome UseAeroCaptionButtons="False"
 					  CaptionHeight="{Binding ElementName=Window, Path=Height}"
@@ -18,6 +20,7 @@
 					  />
 	</WindowChrome.WindowChrome>
 	<StackPanel Orientation="Vertical" Margin="40" WindowChrome.IsHitTestVisibleInChrome="True">
+		<Label x:Name="LabelTop" FontSize="24" HorizontalAlignment="Center"/>
 		<DockPanel LastChildFill="True">
 			<Button Width="100" Content="Создать" DockPanel.Dock="Right" Click="CreateBtnClick"/>
 			<TextBox x:Name="FilterTb"

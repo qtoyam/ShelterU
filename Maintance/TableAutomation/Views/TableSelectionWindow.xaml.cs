@@ -27,7 +27,8 @@ namespace Maintance.TableAutomation.Views
 	/// </summary>
 	public partial class TableSelectionWindow : Window
 	{
-		private readonly List<PropertyInfo> _filteringProperties;
+		private readonly List<PropertyInfo> _filteringProperties = new();
+		private readonly List<IReadOnlyDictionary<int, string>?> _enumStrProps = new();
 		private readonly ICollectionView _entityViews;
 		private readonly ITableManager _tableManager;
 		private bool _isSelected = false;
@@ -35,8 +36,8 @@ namespace Maintance.TableAutomation.Views
 		public TableSelectionWindow(ITableManager tableManager)
 		{
 			InitializeComponent();
+			LabelTop.Content = tableManager.ParentName;
 			var cols = DB_grid.Columns;
-			_filteringProperties = new();
 			_tableManager = tableManager;
 			foreach (var vcp in _tableManager.TableColumnInfos)
 			{
@@ -49,12 +50,18 @@ namespace Maintance.TableAutomation.Views
 				{
 					b.Converter = new EnumToStrConverter(AutomationHelper.GetEnumDescriptions(vcp.PropertyInfo.PropertyType),
 						vcp.PropertyInfo.PropertyType);
+					_enumStrProps.Add(AutomationHelper.GetEnumDescriptions(vcp.PropertyInfo.PropertyType));
+				}
+				else
+				{
+					_enumStrProps.Add(null);
 				}
 				cols.Add(
 					new MaterialDesignThemes.Wpf.DataGridTextColumn
 					{
 						Header = vcp.PropertyInfoAttribute.DisplayName,
 						Binding = b,
+						Width = new(1, DataGridLengthUnitType.Star),
 						IsReadOnly = true
 					});
 				if (vcp.SelectionColumnAttribute.IsFilter)
@@ -86,15 +93,33 @@ namespace Maintance.TableAutomation.Views
 
 		private void FilterTb_TextChanged(object sender, TextChangedEventArgs e)
 		{
-			if (!string.IsNullOrEmpty(FilterTb.Text))
+			var filterText = FilterTb.Text;
+			if (!string.IsNullOrEmpty(filterText))
 			{
 				_entityViews.Filter = (entity) =>
 				{
-					foreach(var p in _filteringProperties)
+					foreach (var p_e in _filteringProperties.Zip(_enumStrProps))
 					{
-						if(p.GetValue(entity)?.ToString()?.Contains(FilterTb.Text) == true)
+						if (p_e.Second != null)
 						{
-							return true;
+							if (p_e.Second.TryGetValue((int)p_e.First.GetValue(entity)!, out var str))
+							{
+								if (str.Contains(filterText, StringComparison.OrdinalIgnoreCase))
+								{
+									return true;
+								}
+							}
+						}
+						else
+						{
+							if (
+								p_e.First
+									.GetValue(entity)?
+									.ToString()?
+									.Contains(filterText, StringComparison.OrdinalIgnoreCase) == true)
+							{
+								return true;
+							}
 						}
 					}
 					return false;

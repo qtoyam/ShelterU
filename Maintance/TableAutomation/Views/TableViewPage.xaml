@@ -34,18 +34,22 @@
 					 VerticalContentAlignment="Center"	
 					 materialDesign:HintAssist.Hint="Значение"
 					 TextChanged="FilteringChanged"
+					 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
 					 />
 
 			<Button x:Name="DeleteBtn"
 					Content="Удалить" DockPanel.Dock="Right" Margin="0,0,10,0"
 					IsEnabled="{Binding ElementName=DB_grid, Path=SelectedIndex, Converter={exconv:IntPositiveBooleanConverter}}"
+					Click="DeleteBtn_Click"
 					/>
 			<Button x:Name="EditBtn"
 					Content="Изменить" DockPanel.Dock="Right" Margin="0,0,10,0"
 					IsEnabled="{Binding ElementName=DB_grid, Path=SelectedIndex, Converter={exconv:IntPositiveBooleanConverter}}"
+					Click="EditBtn_Click"
 					/>
 			<Button x:Name="AddBtn"
 					Content="Добавить" DockPanel.Dock="Right" Margin="0,0,10,0"
+					Click="AddBtn_Click"
 					/>
 		</DockPanel>
 		<DataGrid x:Name="DB_grid" Grid.Row="1"

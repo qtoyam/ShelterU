@@ -7,7 +7,8 @@
         Title="TableCreate" Width="300"
 		x:Name="TableCreateWindow"
 		Background="{DynamicResource Gray1}"
-		SizeToContent="Height">
+		SizeToContent="Height"
+		ShowInTaskbar="False">
 	<WindowChrome.WindowChrome>
 		<WindowChrome UseAeroCaptionButtons="False"
 					  CaptionHeight="{Binding ElementName=TableCreateWindow, Path=Height}"
@@ -15,10 +16,11 @@
 					  />
 	</WindowChrome.WindowChrome>
 	<StackPanel Orientation="Vertical" Margin="40">
+		<Label x:Name="LabelTop" FontSize="24" HorizontalAlignment="Center"/>
 		<StackPanel x:Name="FieldsPanel" WindowChrome.IsHitTestVisibleInChrome="True"/>
 		<DockPanel LastChildFill="False" WindowChrome.IsHitTestVisibleInChrome="True" Margin="0,20,0,0">
 			<Button Width="105" Content="Сохранить" DockPanel.Dock="Left" IsDefault="True" Click="AddBtnClick"/>
-			<Button Width="105" Content="Отмена" DockPanel.Dock="Right" IsCancel="True" Click="CancelBtnClick"/>
+			<Button Width="105" Content="Отмена" DockPanel.Dock="Right" Click="CancelBtnClick"/>
 		</DockPanel>
 	</StackPanel>
 </Window>
