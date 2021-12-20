@@ -27,23 +27,27 @@ namespace Maintance.TableAutomation.Views
 	/// </summary>
 	public partial class TableViewPage : Page
 	{
+		private enum FilterType
+		{
+			Default,
+			Enum,
+			Date
+		}
+
 		private readonly ITableManager _tableManager;
 		private readonly ICollectionView _entitiesView;
 
-		private readonly List<PropertyInfo> _realFilteringProps = new();
-		private readonly List<PropertyInfo> _realGroupingProps = new();
-		private readonly List<DataGridColumn> _groupLinkedColumns = new();
-
-		private PropertyInfo? _currentFilteringProperty;
-		private IReadOnlyDictionary<int, string>? _enumFilterValues;
+		private readonly List<(Predicate<object> filter, FilterType ftype, System.Collections.IEnumerable? itemsSource)> _filterPredicates = new();
+		private readonly List<(DataGridColumn col, string propName)> _groupInfos = new();
+		private readonly PropertyGroupDescription _currentGroupDescription = new();
 
 		public TableViewPage(ITableManager tableManager)
 		{
 			InitializeComponent();
 			_tableManager = tableManager;
 			var cols = DB_grid.Columns;
-			List<string> filteringOptions = new() { "" };
-			List<string> groupingOptions = new() { "" };
+			List<string> filterOptions = new() { "" };
+			List<string> groupOptions = new() { "" };
 			foreach (var vcp in _tableManager.TableColumnInfos)
 			{
 				if (vcp.ViewColumnAttribute == null) continue;
@@ -51,118 +55,145 @@ namespace Maintance.TableAutomation.Views
 				{
 					Mode = BindingMode.OneWay
 				};
-				if (vcp.PropertyInfo.PropertyType.IsEnum)
+				var type = vcp.PropertyInfo.PropertyType;
+				IReadOnlyDictionary<int, string>? enumDescrs = null;
+				if (type.IsEnum)
 				{
-					b.Converter = new EnumToStrConverter(AutomationHelper.GetEnumDescriptions(vcp.PropertyInfo.PropertyType),
+					enumDescrs = AutomationHelper.GetEnumDescriptions(type);
+					b.Converter = new EnumToStrConverter(enumDescrs,
 						vcp.PropertyInfo.PropertyType);
 				}
-				cols.Add(
-					new MaterialDesignThemes.Wpf.DataGridTextColumn()
-					{
-						Header = vcp.PropertyInfoAttribute.DisplayName,
-						Binding = b,
-						IsReadOnly = true
-					});
+				MaterialDesignThemes.Wpf.DataGridTextColumn col = new()
+				{
+					Header = vcp.PropertyInfoAttribute.DisplayName,
+					Binding = b,
+					IsReadOnly = true
+				};
+				cols.Add(col);
 				if (vcp.ViewColumnAttribute.IsFilter)
 				{
-					filteringOptions.Add(vcp.PropertyInfoAttribute.DisplayName);
-					_realFilteringProps.Add(vcp.PropertyInfo);
+					var propGetter = vcp.PropertyInfo.GetGetMethod() ?? throw new NotSupportedException();
+					filterOptions.Add(vcp.PropertyInfoAttribute.DisplayName);
+					if (enumDescrs != null) //enums
+					{
+						_filterPredicates.Add(new((pv) =>
+						{
+							if (FilterEnum.SelectedIndex < 1) return true; //0, -1 index = no item
+							var val = propGetter.Invoke(pv, null);
+							if (val is not int valInt) return false;
+							return enumDescrs[valInt].Equals(FilterEnum.SelectedItem);
+						}, FilterType.Enum, enumDescrs.Values));
+					}
+					else //tostring()
+					{
+						_filterPredicates.Add(new((pv) =>
+						{
+							if (string.IsNullOrEmpty(FilterString.Text)) return true; //no filter
+							if (pv != null && propGetter.Invoke(pv, null)?.ToString() is string pvString)
+							{
+								return pvString.Contains(FilterString.Text, StringComparison.InvariantCultureIgnoreCase);
+							}
+							return false;
+						}, FilterType.Default, null));
+					}
 				}
 				if (vcp.ViewColumnAttribute.IsGroup)
 				{
-					groupingOptions.Add(vcp.PropertyInfoAttribute.DisplayName);
-					_realGroupingProps.Add(vcp.PropertyInfo);
-					_groupLinkedColumns.Add(cols.Last());
+					_groupInfos.Add(new(col, vcp.PropertyInfo.Name));
+					groupOptions.Add(vcp.PropertyInfoAttribute.DisplayName);
 				}
 
 			}
-			FilterBy_CB.ItemsSource = filteringOptions;
-			GroupBy_CB.ItemsSource = groupingOptions;
+			FilterBy_CB.ItemsSource = filterOptions;
+			GroupBy_CB.ItemsSource = groupOptions;
 
 			_entitiesView = _tableManager.CreateCollectionView();
 			DB_grid.ItemsSource = _entitiesView;
+			//TODO: mb find fix (350+ error bindings) PIZDEC KOSTIL AHXXDFShDUIASK
+			HandleGrouping(0);
 		}
 
+		#region Grouping
 		private DataGridColumn? _hiddenCol;
 		private void GroupingChanged(object sender, SelectionChangedEventArgs e)
 		{
-			var si = GroupBy_CB.SelectedIndex;
-			var gd = _entitiesView.GroupDescriptions;
-			gd.Clear();
-			if (si > 0)
+			var si = GroupBy_CB.SelectedIndex - 1; //cauze first element is empty string
+			HandleGrouping(si);
+		}
+
+		private void HandleGrouping(int index)
+		{
+			if (index >= 0)
 			{
-				var gCol = _groupLinkedColumns[si - 1];
-				gCol.Visibility = Visibility.Collapsed;
-				var t = _realGroupingProps[si - 1];
-				gd.Add(new PropertyGroupDescription(t.Name));
-				if (_hiddenCol != null)
+				var gInfo = _groupInfos[index];
+				_currentGroupDescription.PropertyName = gInfo.propName;
+				if (_hiddenCol != null) //currently grouping
 				{
 					_hiddenCol.Visibility = Visibility.Visible;
 				}
-				_hiddenCol = gCol;
+				else //currently no grouping
+				{
+					_entitiesView.GroupDescriptions.Add(_currentGroupDescription);
+				}
+				_hiddenCol = gInfo.col;
+				_hiddenCol.Visibility = Visibility.Collapsed;
 			}
-			else if (_hiddenCol != null)
+			else if (_hiddenCol != null) //currently grouping and we want to turn it off
 			{
 				_hiddenCol.Visibility = Visibility.Visible;
 				_hiddenCol = null;
+				_entitiesView.GroupDescriptions.Clear();
 			}
 		}
+		#endregion //Grouping
 
-		private void FilteringChanged(object sender, TextChangedEventArgs e)
-		{
-			if (_currentFilteringProperty == null) return;
-			var filterText = FilterBy_TB.Text;
-			if (!string.IsNullOrEmpty(filterText))
-			{
-				if (_enumFilterValues != null)
-				{
-					_entitiesView.Filter = x =>
-						{
-							if (_enumFilterValues.TryGetValue((int)_currentFilteringProperty.GetValue(x)!, out var str))
-							{
-								return str.Contains(filterText, StringComparison.OrdinalIgnoreCase);
-							}
-							return false;
-						};
-				}
-				else
-				{
-					_entitiesView.Filter = x =>
-						_currentFilteringProperty
-							.GetValue(x)?
-							.ToString()?
-							.Contains(filterText, StringComparison.OrdinalIgnoreCase) == true;
-				}
-			}
-			else
-			{
-				_entitiesView.Filter = null;
-			}
-		}
-
-		private readonly DoubleAnimation _changeFilterTBWidth = new(100, TimeSpan.FromSeconds(0.5));
-
+		#region Filtering
+		private readonly DoubleAnimation _changeWidthTo = new(200, TimeSpan.FromSeconds(0.5));
+		private FrameworkElement? _currentFilterControl;
 		private void FilterBy_CB_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			var index = FilterBy_CB.SelectedIndex;
-			if (index < 1)
+			var index = FilterBy_CB.SelectedIndex - 1; //cauze first element is empty string
+			if (index >= 0)
 			{
-				_changeFilterTBWidth.To = 0;
-				_currentFilteringProperty = null;
-				_entitiesView.Filter = null;
-				FilterBy_TB.Clear();
-				_enumFilterValues = null;
+				var filterInfo = _filterPredicates[index];
+				_currentFilterControl = filterInfo.ftype switch
+				{
+					FilterType.Default => FilterString,
+					FilterType.Enum => FilterEnum,
+					FilterType.Date => FilterEnum,
+					_ => throw new NotImplementedException(),
+				};
+				_changeWidthTo.To = 200;
+				_currentFilterControl.BeginAnimation(FrameworkElement.WidthProperty, _changeWidthTo);
+
+				_entitiesView.Filter = filterInfo.filter;
+				FilterEnum.ItemsSource = filterInfo.itemsSource;
+				FilterEnum.SelectedIndex = -1;
+				_currentFilterControl.IsEnabled = true;
 			}
 			else
 			{
-				_changeFilterTBWidth.To = 100;
-				_currentFilteringProperty = _realFilteringProps[index - 1];
-				_enumFilterValues = _currentFilteringProperty.PropertyType.IsEnum
-					? AutomationHelper.GetEnumDescriptions(_currentFilteringProperty.PropertyType)
-					: null;
+				if (_currentFilterControl != null)
+				{
+					_currentFilterControl.IsEnabled = false;
+					_changeWidthTo.To = 0;
+					_currentFilterControl.BeginAnimation(FrameworkElement.WidthProperty, _changeWidthTo);
+					_currentFilterControl = null;
+
+					_entitiesView.Filter = null;
+				}
 			}
-			FilterBy_TB.BeginAnimation(TextBox.WidthProperty, _changeFilterTBWidth);
 		}
+		private void FilterEnum_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			_entitiesView.Refresh();
+		}
+
+		private void FilterString_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			_entitiesView.Refresh();
+		}
+		#endregion //Filtering
 
 		private void AddBtn_Click(object sender, RoutedEventArgs e)
 		{

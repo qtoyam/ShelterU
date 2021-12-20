@@ -6,6 +6,7 @@
 	  xmlns:exconv="clr-namespace:WPFCoreEx.Converters;assembly=WPFCoreEx"
 	  xmlns:mm="clr-namespace:Maintance.Converters"
 	  xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+	  xmlns:views="clr-namespace:Maintance.TableAutomation.Views"
 	  mc:Ignorable="d" 
 	  d:DesignHeight="380" d:DesignWidth="900"
 	  >
@@ -27,15 +28,23 @@
 					  Style="{StaticResource MaterialDesignFloatingHintComboBox}"
 					  SelectionChanged="FilterBy_CB_SelectionChanged"
 					  />
-			<TextBox x:Name="FilterBy_TB"
+			<TextBox x:Name="FilterString"
 					 Margin="10,0,0,0"
 					 Width="0"
 					 Foreground="Cyan"
 					 VerticalContentAlignment="Center"	
 					 materialDesign:HintAssist.Hint="Значение"
-					 TextChanged="FilteringChanged"
+					 TextChanged="FilterString_TextChanged"
 					 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
 					 />
+			<ComboBox x:Name="FilterEnum"
+					  Margin="10,0,0,0"
+					  Width="0"
+					  Foreground="Cyan"
+					  VerticalContentAlignment="Center"	
+					  materialDesign:HintAssist.Hint="Значение"
+					  SelectionChanged="FilterEnum_SelectionChanged"
+				/>
 
 			<Button x:Name="DeleteBtn"
 					Content="Удалить" DockPanel.Dock="Right" Margin="0,0,10,0"
@@ -57,11 +66,12 @@
 				  CanUserAddRows="False"
 				  CanUserDeleteRows="False"
 				  SelectionMode="Single"
-				  Style="{StaticResource MaterialDesignDataGrid}"
 				  HeadersVisibility="Column" Foreground="AliceBlue"
 				  AutoGenerateColumns="False"
 				  GridLinesVisibility="None"
 				  SelectionUnit="FullRow"
+				  EnableRowVirtualization="False"
+				  EnableColumnVirtualization="False"
 				  >
 			<DataGrid.GroupStyle>
 				<GroupStyle>
@@ -71,7 +81,8 @@
 							<Setter Property="Template">
 								<Setter.Value>
 									<ControlTemplate TargetType="{x:Type GroupItem}">
-										<Expander Foreground="#FFEEEEEE" BorderThickness="1,1,1,5">
+										<Expander Foreground="#FFEEEEEE" BorderThickness="1,1,1,5"
+												  IsExpanded="True">
 											<Expander.Header>
 												<DockPanel>
 													<TextBlock FontWeight="Bold" Text="{Binding Name, Converter={mm:EnumTryToStringConverter}}" Margin="5,0,0,0" Width="100"/>

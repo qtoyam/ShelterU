@@ -12,6 +12,7 @@ namespace Maintance.Converters
 {
 	public class EnumTryToStringConverter :MarkupExtension, IValueConverter
 	{
+		//TODO: slow unoptimized parasha if enum
 		public object Convert(object valueSource, Type targetType, object parameter, CultureInfo culture)
 		{
 			if (valueSource == null) return null;

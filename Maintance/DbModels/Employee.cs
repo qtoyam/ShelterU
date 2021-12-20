@@ -26,15 +26,16 @@ namespace Maintance.DbModels
 		[SelectionColumn(isVisible: true, isFilter: true)]
 		public string FirstName { get; set; } = null!;
 
+		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: true)]
+		[ViewColumn(isFilter: true, isGroup: true)]
+		[SelectionColumn(isVisible: true, isFilter: true)]
+		public string? MiddleName { get; set; }
+
 		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: false)]
 		[ViewColumn(isFilter: true, isGroup: true)]
 		[SelectionColumn(isVisible: true, isFilter: true)]
 		public string LastName { get; set; } = null!;
 
-		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: true)]
-		[ViewColumn(isFilter: true, isGroup: true)]
-		[SelectionColumn(isVisible: true, isFilter: true)]
-		public string? MiddleName { get; set; }
 
 		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: true)]
 		[ViewColumn(isFilter: true, isGroup: true)]

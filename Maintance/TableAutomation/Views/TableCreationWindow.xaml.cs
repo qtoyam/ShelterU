@@ -90,6 +90,13 @@ namespace Maintance.TableAutomation.Views
 						  MaterialDesignThemes.Wpf.TimePicker.SelectedTimeProperty, binding);
 					controlForProperty = tp;
 				}
+				else if (t== typeof(DateTime))
+				{
+					var dtp = new Xceed.Wpf.Toolkit.DateTimePicker();
+					currentBindingExpr = (BindingExpression)BindingOperations.SetBinding(dtp,
+						Xceed.Wpf.Toolkit.DateTimePicker.CurrentDateTimePartProperty, binding);
+					controlForProperty = dtp;
+				}
 				else if (t == typeof(bool))
 				{
 					var cb = new CheckBox
