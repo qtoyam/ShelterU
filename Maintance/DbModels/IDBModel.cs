@@ -1,6 +1,6 @@
 ﻿namespace Maintance.DbModels
 {
-	public interface IDBModel
+	public interface IDBModelAnimalManager
 	{
 	}
 }

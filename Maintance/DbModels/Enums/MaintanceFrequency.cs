@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Maintance.DbModels.Unused
+namespace Maintance.DbModels
 {
 	public enum MaintanceFrequency
 	{

@@ -8,8 +8,10 @@ using Maintance.TableAutomation;
 
 using Microsoft.Extensions.DependencyInjection;
 using Maintance.TableAutomation.DbModelAttributes;
+using Maintance.DbModels;
+using System.Collections.Generic;
 
-namespace Maintance.Services
+namespace Maintance.TableAutomation
 {
 	public class TableManagerSelector
 	{
@@ -19,25 +21,41 @@ namespace Maintance.Services
 
 		private readonly ReadOnlyCollection<Type> _tableTypes;
 
-		public TableManagerSelector(ServiceCollection sc, Type searchingType)
+		public TableManagerSelector(ServiceCollection sc, string role)
 		{
+			Type searchingInterface;
+			var generalType = typeof(IDBModelGeneral);
+			if (role.Contains("admin"))
+			{
+				searchingInterface = typeof(IDBModelAdmin);
+			}
+			else if (role.Contains("animal_worker"))
+			{
+				searchingInterface = typeof(IDBModelAnimalManager);
+			}
+			else throw new ArgumentException("Unexpected role!");
 			var mtype = typeof(TableManager<>);
-			Collection<string> names = new();
-			Collection<Type> types = new();
+			List<(string name, int index)> tinfos = new();
+			List<Type> types = new();
 			foreach (var tableType in Assembly.GetCallingAssembly().GetTypes())
 			{
-				if (tableType.GetInterfaces().Contains(searchingType))
+				if (tableType.GetInterfaces().Any(x=>x == searchingInterface || x == generalType))
 				{
 					var tinfo = tableType.GetCustomAttribute<TableInfoAttribute>();
 					var genmtype = mtype.MakeGenericType(tableType);
-					names.Add(tinfo?.Name ?? tableType.Name);
+					tinfos.Add(new(tinfo?.Name ?? tableType.Name, tinfo?.Index ?? int.MaxValue));
 					types.Add(genmtype);
 					sc.AddSingleton(genmtype);
 				}
 			}
 			sc.AddSingleton(this);
 
-			TableNames = new ReadOnlyCollection<string>(names);
+			var t = tinfos.ToArray();
+			var t2 = types.ToArray();
+			Array.Sort(t, t2);
+			tinfos = t.ToList();
+			types = t2.ToList();
+			TableNames = new ReadOnlyCollection<string>(tinfos.Select(x=>x.name).ToList());
 			_tableTypes = new ReadOnlyCollection<Type>(types);
 		}
 

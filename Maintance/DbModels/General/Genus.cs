@@ -5,8 +5,8 @@ using Maintance.TableAutomation.Models;
 
 namespace Maintance.DbModels
 {
-	[TableInfo("Роды)")]
-	public partial class Genus : IDBModel
+	[TableInfo("Виды животных", 3)]
+	public partial class Genus : IDBModelGeneral
 	{
         public Genus()
         {
@@ -15,13 +15,12 @@ namespace Maintance.DbModels
             Typeofrequisites = new HashSet<TypeOfRequisite>();
         }
 
-		[PropertyInfo(displayName: "", isAutofoFill: true, isOptional: false)]
-		[ViewColumn(isFilter: true, isGroup: true)]
-		[SelectionColumn(isVisible: true, isFilter: true)]
+		[PropertyInfo(displayName: "ID", isAutofoFill: true, isOptional: false)]
+		[ViewColumn(isFilter: true, isGroup: false)]
 		public int GenusId { get; set; }
 
-		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: false)]
-		[ViewColumn(isFilter: true, isGroup: true)]
+		[PropertyInfo(displayName: "Род", isAutofoFill: false, isOptional: false)]
+		[ViewColumn(isFilter: true, isGroup: false)]
 		[SelectionColumn(isVisible: true, isFilter: true)]
 		public string Name { get; set; } = null!;
 
@@ -30,5 +29,6 @@ namespace Maintance.DbModels
         public virtual ICollection<TypeOfRequisite> Typeofrequisites { get; set; }
 
 		public override string ToString() => Name;
+
 	}
 }

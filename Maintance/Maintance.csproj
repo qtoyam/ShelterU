@@ -5,6 +5,7 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
   </PropertyGroup>
 
   <ItemGroup>
@@ -31,7 +32,7 @@
       <HintPath>..\..\dll_sources\WPFCoreEx\WPFCoreEx\bin\Release\net6.0-windows7.0\WPFCoreEx.dll</HintPath>
     </Reference>
     <Reference Include="WPFCoreEx.Abstractions">
-      <HintPath>..\..\dll_sources\WPFCoreEx\WPFCoreEx\bin\Release\net6.0-windows7.0\WPFCoreEx.Abstractions.dll</HintPath>
+      <HintPath>..\..\dll_sources\WPFCoreEx\WPFCoreEx.Abstractions\bin\Release\net6.0\WPFCoreEx.Abstractions.dll</HintPath>
     </Reference>
   </ItemGroup>
 

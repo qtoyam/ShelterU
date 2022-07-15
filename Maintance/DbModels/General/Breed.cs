@@ -5,9 +5,9 @@ using Maintance.TableAutomation.Models;
 
 namespace Maintance.DbModels
 {
-	[TableInfo("Породы")]
-	public partial class Breed : IDBModel
-    {
+	[TableInfo("Породы", 1)]
+	public partial class Breed : IDBModelGeneral
+	{
         public Breed()
         {
             Animals = new HashSet<Animal>();
@@ -18,23 +18,22 @@ namespace Maintance.DbModels
 		[SelectionColumn(isVisible: true, isFilter: true)]
 		public int BreedId { get; set; }
 
-		[PropertyInfo(displayName: "Имя", isAutofoFill: false, isOptional: false)]
-		[ViewColumn(isFilter: true, isGroup: true)]
+		[PropertyInfo(displayName: "Порода", isAutofoFill: false, isOptional: false)]
+		[ViewColumn(isFilter: true, isGroup: false)]
 		[SelectionColumn(isVisible: true, isFilter: true)]
 		public string Name { get; set; } = null!;
 
 
-		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: false)]
+		[PropertyInfo(displayName: "Пол", isAutofoFill: false, isOptional: false)]
 		[ViewColumn(isFilter: true, isGroup: true)]
 		[SelectionColumn(isVisible: true, isFilter: true)]
 		public Gender Gender { get; set; }
 
-		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: true)]
-		[ViewColumn(isFilter: true, isGroup: true)]
-		[SelectionColumn(isVisible: true, isFilter: true)]
+		[PropertyInfo(displayName: "Описание породы", isAutofoFill: false, isOptional: true)]
+		[ViewColumn(isFilter: false, isGroup: false)]
 		public string? Description { get; set; }
 
-		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: false)]
+		[PropertyInfo(displayName: "Род животного", isAutofoFill: false, isOptional: false)]
 		[ViewColumn(isFilter: true, isGroup: true)]
 		[SelectionColumn(isVisible: true, isFilter: true)]
 		public virtual Genus Genus { get; set; } = null!;

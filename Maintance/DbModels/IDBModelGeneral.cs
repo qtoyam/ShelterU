@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Maintance.TableAutomation.Views
+namespace Maintance.DbModels
 {
-	public class EmptyViewModel
+	public interface IDBModelGeneral
 	{
 	}
 }

@@ -41,6 +41,29 @@ namespace Maintance.TableAutomation.Views
 		private readonly List<(DataGridColumn col, string propName)> _groupInfos = new();
 		private readonly PropertyGroupDescription _currentGroupDescription = new();
 
+		private DateOnly _today = DateOnly.FromDateTime(DateTime.Now);
+
+		private readonly List<DateFilterInfo> _dateFilters = new()
+		{
+			new("Всё время", -1),
+			new(
+				"Сегодня",
+				0
+				),
+			new(
+				"Неделя",
+				7
+				),
+			new(
+				"Месяц",
+				30
+				),
+			new(
+				"Год",
+				365
+				)
+		};
+
 		public TableViewPage(ITableManager tableManager)
 		{
 			InitializeComponent();
@@ -84,6 +107,22 @@ namespace Maintance.TableAutomation.Views
 							return enumDescrs[valInt].Equals(FilterEnum.SelectedItem);
 						}, FilterType.Enum, enumDescrs.Values));
 					}
+					else if(type == typeof(DateTime) || type == typeof(DateOnly)) //date
+					{
+						_filterPredicates.Add(new((pv) =>
+						{
+							var index = FilterEnum.SelectedIndex;//0, -1 index = no item
+							if (index < 1) return true;
+							var val = propGetter.Invoke(pv, null);
+							DateOnly pd;
+							if (val is DateTime vdt) pd = DateOnly.FromDateTime(vdt);
+							else if (val is DateOnly vdo) pd = vdo;
+							else return false;
+							var maxOffset = _dateFilters[index].MaxOffset;
+							return _today.DayNumber - pd.DayNumber <= maxOffset;
+							
+						}, FilterType.Date, _dateFilters));
+					}
 					else //tostring()
 					{
 						_filterPredicates.Add(new((pv) =>
@@ -109,8 +148,16 @@ namespace Maintance.TableAutomation.Views
 
 			_entitiesView = _tableManager.CreateCollectionView();
 			DB_grid.ItemsSource = _entitiesView;
+			if (_groupInfos.Count > 1)
+			{
+				GroupBy_CB.SelectedIndex = 1;
+			}
+			else
+			{
+				DB_grid.GroupStyle.Clear();
+				GroupBy_CB.Visibility = Visibility.Collapsed;
+			}
 			//TODO: mb find fix (350+ error bindings) PIZDEC KOSTIL AHXXDFShDUIASK
-			HandleGrouping(0);
 		}
 
 		#region Grouping
@@ -186,6 +233,7 @@ namespace Maintance.TableAutomation.Views
 		}
 		private void FilterEnum_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
+			_today = DateOnly.FromDateTime(DateTime.Now);
 			_entitiesView.Refresh();
 		}
 
@@ -195,6 +243,7 @@ namespace Maintance.TableAutomation.Views
 		}
 		#endregion //Filtering
 
+		#region Buttons
 		private void AddBtn_Click(object sender, RoutedEventArgs e)
 		{
 			this.IsEnabled = false;
@@ -222,5 +271,6 @@ namespace Maintance.TableAutomation.Views
 			if (res == true) MessageBox.Show($"Удалено: {selectedEntity}");
 			this.IsEnabled = true;
 		}
+		#endregion //Buttons
 	}
 }

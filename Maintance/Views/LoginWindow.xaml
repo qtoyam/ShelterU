@@ -6,25 +6,73 @@
         xmlns:local="clr-namespace:Maintance.Views"
 		xmlns:exconv="clr-namespace:WPFCoreEx.Converters;assembly=WPFCoreEx"
 		xmlns:me="http://materialdesigninxaml.net/winfx/xaml/themes"
-        mc:Ignorable="d"
-        Title="Авторизация" Height="450" Width="400"
-		Background="{DynamicResource Gray1}">
+		xmlns:bex="clr-namespace:WPFCoreEx.Behaviors;assembly=WPFCoreEx"
+		xmlns:exc="clr-namespace:WPFCoreEx.Controls;assembly=WPFCoreEx" xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+		mc:Ignorable="d"
+        Title="Shelter | Авторизация" Height="450" Width="400"
+		Name="LoginWnd"
+		ResizeMode="NoResize"
+		Background="{DynamicResource Gray1}"
+		FocusManager.FocusedElement="{Binding ElementName=LoginTb}"
+		WindowStartupLocation="CenterScreen"
+		>
+	<WindowChrome.WindowChrome>
+		<WindowChrome UseAeroCaptionButtons="False"
+					  CaptionHeight="{Binding ElementName=LoginWnd, Path=ActualHeight}"
+					  ResizeBorderThickness="5"
+					  />
+	</WindowChrome.WindowChrome>
 	<Grid>
-		<StackPanel Margin="100,50,100,50">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="30"/>
+			<RowDefinition Height="*"/>
+		</Grid.RowDefinitions>
+		<Grid x:Name="Chrome_grid" Grid.Row="0" Background="{StaticResource Gray2}" WindowChrome.IsHitTestVisibleInChrome="False">
+			<StackPanel x:Name="AppInfo_Panel" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center"
+							WindowChrome.IsHitTestVisibleInChrome="True">
+				<Image Source="{StaticResource paw_heartDrawingImage}"/>
+				<TextBlock Text="Shelter | Авторизация" VerticalAlignment="Center"
+							   Margin="10,0,0,0" Foreground="{StaticResource WhiteFont}"/>
+			</StackPanel>
+
+			<StackPanel x:Name="ChromeButtons_Panel" Orientation="Horizontal" HorizontalAlignment="Right" WindowChrome.IsHitTestVisibleInChrome="True"
+							Height="24">
+				<exc:ButtonEx x:Name="MinimizeBtn" ButtonBehavior="ImageWithOpacity" Margin="0,0,5,0">
+					<Image Source="{StaticResource minimize1DrawingImage}"/>
+					<b:Interaction.Behaviors>
+						<bex:MinimizeAppBehavior/>
+					</b:Interaction.Behaviors>
+				</exc:ButtonEx>
+				<exc:ButtonEx x:Name="CloseBtn" ButtonBehavior="ImageWithOpacity">
+					<Image Source="{StaticResource closeDrawingImage}"/>
+					<b:Interaction.Behaviors>
+						<bex:CloseWindowBehavior/>
+					</b:Interaction.Behaviors>
+				</exc:ButtonEx>
+			</StackPanel>
+		</Grid>
+		<StackPanel Grid.Row="1" Margin="100,50,100,50">
 			<Label Content="Авторизация" HorizontalAlignment="Center" FontSize="24" Margin="0,0,0,50"/>
-			<StackPanel Orientation="Vertical" VerticalAlignment="Center">
+			<StackPanel Orientation="Vertical" VerticalAlignment="Center" FocusManager.IsFocusScope="True">
 				<TextBox
-				x:Name="LoginTb"
-				Foreground="{StaticResource WhiteFont}"
-				me:HintAssist.Hint="Login"
-				Margin="0,0,0,25"/>
-				<PasswordBox
-				x:Name="PasswordTb"
-				Foreground="{StaticResource WhiteFont}"
-				me:HintAssist.Hint="Password"
-				Margin="0,25,0,25"/>
+					TabIndex="0"
+					x:Name="LoginTb"
+					Foreground="{StaticResource WhiteFont}"
+					me:HintAssist.Hint="Login"
+					Margin="0,0,0,25"
+					WindowChrome.IsHitTestVisibleInChrome="True"
+					/>
+				<PasswordBox 
+					TabIndex="1"
+					x:Name="PasswordTb"
+					Foreground="{StaticResource WhiteFont}"
+					me:HintAssist.Hint="Password"
+					Margin="0,25,0,25"
+					WindowChrome.IsHitTestVisibleInChrome="True"
+					/>
 
 				<Button Content="Auth" Margin="0,25,0,0" Click="Button_Click" IsDefault="True"
+					WindowChrome.IsHitTestVisibleInChrome="True"
 					IsEnabled="{Binding ElementName=LoginTb,Path=Text, Converter={exconv:StringNotEmptyBooleanConverter}}"/>
 			</StackPanel>
 		</StackPanel>

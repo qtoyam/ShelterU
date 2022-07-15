@@ -10,10 +10,12 @@ namespace Maintance.TableAutomation.DbModelAttributes
 	internal class TableInfoAttribute : Attribute
 	{
 		public readonly string Name;
+        public readonly int Index;
 
-		public TableInfoAttribute(string name)
+        public TableInfoAttribute(string name, int index = int.MaxValue)
 		{
 			Name = name;
-		}
+            Index = index;
+        }
 	}
 }

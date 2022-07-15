@@ -17,8 +17,6 @@ using System.Windows.Shapes;
 
 using Maintance.Converters;
 using Maintance.DbModels;
-using Maintance.Services;
-using Maintance.TableAutomation.Models;
 using Maintance.ValidationRules;
 
 using WPFCoreEx.ValidationRules;
@@ -50,7 +48,10 @@ namespace Maintance.TableAutomation.Views
 				t ??= vcp.PropertyInfo.PropertyType;
 				Binding binding = new(vcp.PropertyInfo.Name);
 				BindingExpression currentBindingExpr;
-				bool isDBModel = t.GetInterfaces().Contains(typeof(IDBModel));
+				bool isDBModel = t.GetInterfaces().Any(x => 
+					x == typeof(IDBModelAdmin)
+					|| x == typeof(IDBModelAnimalManager)
+					|| x == typeof(IDBModelGeneral));
 				//binding.Mode = BindingMode.TwoWay;
 				binding.Mode = isDBModel ? BindingMode.OneWay : BindingMode.TwoWay;
 				binding.UpdateSourceTrigger = UpdateSourceTrigger.Default;
@@ -60,7 +61,7 @@ namespace Maintance.TableAutomation.Views
 					{
 						binding.ValidationRules.Add(new StringNotEmptyValidationRule()
 						{
-							MessageIfEmpty = "Обязательно к заполнению! (string)",
+							MessageIfEmpty = "Обязательно к заполнению!",
 							ValidationStep = ValidationStep.RawProposedValue,
 							ValidatesOnTargetUpdated = true
 						});
@@ -90,11 +91,14 @@ namespace Maintance.TableAutomation.Views
 						  MaterialDesignThemes.Wpf.TimePicker.SelectedTimeProperty, binding);
 					controlForProperty = tp;
 				}
-				else if (t== typeof(DateTime))
+				else if (t == typeof(DateTime))
 				{
-					var dtp = new Xceed.Wpf.Toolkit.DateTimePicker();
+					var dtp = new Xceed.Wpf.Toolkit.DateTimePicker()
+					{
+						Background = Brushes.Gray, DefaultValue = DateTime.Now					
+					};
 					currentBindingExpr = (BindingExpression)BindingOperations.SetBinding(dtp,
-						Xceed.Wpf.Toolkit.DateTimePicker.CurrentDateTimePartProperty, binding);
+						Xceed.Wpf.Toolkit.DateTimePicker.ValueProperty, binding);
 					controlForProperty = dtp;
 				}
 				else if (t == typeof(bool))
@@ -132,7 +136,7 @@ namespace Maintance.TableAutomation.Views
 					};
 					var dbModelTableManager = tableManagerSelector.GetITableManager(t);
 					//btn.Style = (Style)Application.Current.Resources["MaterialDesignIconButton"];
-					TextBox tb = new() { IsReadOnly = false, IsReadOnlyCaretVisible = true };
+					TextBox tb = new() { IsReadOnly = true, IsReadOnlyCaretVisible = true };
 					currentBindingExpr = (BindingExpression)BindingOperations.SetBinding(tb, TextBox.TextProperty, binding);
 					btn.Click += (s, e) =>
 					{
@@ -153,11 +157,16 @@ namespace Maintance.TableAutomation.Views
 				}
 				else
 				{
-					var tb = new TextBox();
+					var tb = new TextBox()
+                    {
+
+						IsReadOnly = vcp.PropertyInfoAttribute.IsReadonly
+					};
 					tb.Style = (Style)Application.Current.Resources["MaterialDesignFloatingHintTextBox"];
 					//binding.Converter = new EmptyStringToNullConverter();
 					currentBindingExpr = (BindingExpression)BindingOperations.SetBinding(tb, TextBox.TextProperty, binding);
 					controlForProperty = tb;
+
 				}
 				parent ??= controlForProperty;
 				MaterialDesignThemes.Wpf.HintAssist.SetHint(controlForProperty, vcp.PropertyInfoAttribute.DisplayName);

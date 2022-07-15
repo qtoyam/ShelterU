@@ -8,12 +8,14 @@ namespace Maintance.TableAutomation.DbModelAttributes
 		public readonly string DisplayName;
 		public readonly bool IsAutofoFill;
 		public readonly bool IsOptional;
+        public readonly bool IsReadonly;
 
-		public PropertyInfoAttribute(string displayName, bool isAutofoFill = false, bool isOptional = false)
+        public PropertyInfoAttribute(string displayName, bool isAutofoFill = false, bool isOptional = false, bool isReadonly = false)
 		{
 			IsAutofoFill = isAutofoFill;
 			IsOptional = isOptional;
-			DisplayName = displayName;
+            IsReadonly = isReadonly;
+            DisplayName = displayName;
 		}
 	}
 }

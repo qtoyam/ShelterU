@@ -9,9 +9,9 @@ namespace Maintance.DbModels
 {
 	public enum Gender
 	{
-		[Description("Дединсайд")]
+		[Description("М")]
 		Male,
-		[Description("Позер")]
+		[Description("Ж")]
 		Female
 	}
 }

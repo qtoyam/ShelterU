@@ -13,6 +13,7 @@
 		Background="{DynamicResource Gray2}"
 		Icon="{StaticResource paw_heartDrawingImage}"
 		MinWidth="800"
+		WindowStartupLocation="CenterScreen"
 		>
 	<WindowChrome.WindowChrome>
 		<WindowChrome CaptionHeight="30" UseAeroCaptionButtons="False" ResizeBorderThickness="4"/>
@@ -35,7 +36,7 @@
 				<StackPanel x:Name="AppInfo_Panel" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center"
 							WindowChrome.IsHitTestVisibleInChrome="True">
 					<Image Source="{StaticResource paw_heartDrawingImage}" MouseDown="Image_MouseDown"/>
-					<TextBlock Text="Shelter" VerticalAlignment="Center"
+					<TextBlock x:Name="TitleTb" VerticalAlignment="Center" MouseDown="TitleTb_MouseDown"
 							   Margin="10,0,0,0" Foreground="{StaticResource WhiteFont}"/>
 				</StackPanel>
 
@@ -69,23 +70,26 @@
 					<ListView.ItemTemplate>
 						<DataTemplate>
 							<StackPanel Orientation="Horizontal" x:Name="Navigation_element_grid"
-										Margin="10">
+										Margin="10,10,40,0"
+										HorizontalAlignment="Right">
 
 								<Image Margin="0,0,5,0"
 									Grid.Column="0" Source="{Binding Image}" Width="32" Height="32"/>
 
 								<TextBlock Grid.Column="1" Text="{Binding Name}"
 										   Foreground="{StaticResource GrayFont}" FontSize="16"
-										   VerticalAlignment="Center"/>
+										   VerticalAlignment="Center"
+										   TextAlignment="Center" HorizontalAlignment="Center"/>
 							</StackPanel>
 
 						</DataTemplate>
 					</ListView.ItemTemplate>
 				</ListView>
 
-				<Border x:Name="Border_content" Grid.Column="1" Background="{StaticResource Gray1}">
-					<Frame x:Name="FrameView" Margin="20" NavigationUIVisibility="Hidden"/>
-				</Border>
+				<Grid x:Name="Border_content" Grid.Column="1" Background="{StaticResource Gray1}">
+					<Frame x:Name="FrameView" Margin="20" NavigationUIVisibility="Hidden"
+						   />
+				</Grid>
 			</Grid>
 		</Grid>
 	</Border>

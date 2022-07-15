@@ -4,18 +4,20 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="TableCreate" Width="300"
-		x:Name="TableCreateWindow"
+        Title="Shelter | Создание" Width="400"
+		Name="TableCreateWindow"
 		Background="{DynamicResource Gray1}"
 		SizeToContent="Height"
-		ShowInTaskbar="False">
+		ShowInTaskbar="False"
+		WindowStartupLocation="CenterOwner"
+		>
 	<WindowChrome.WindowChrome>
 		<WindowChrome UseAeroCaptionButtons="False"
-					  CaptionHeight="{Binding ElementName=TableCreateWindow, Path=Height}"
+					  CaptionHeight="{Binding ElementName=TableCreateWindow, Path=ActualHeight}"
 					  ResizeBorderThickness="5"
 					  />
 	</WindowChrome.WindowChrome>
-	<StackPanel Orientation="Vertical" Margin="40">
+	<StackPanel Name="MainPanel" Orientation="Vertical" Margin="40">
 		<Label x:Name="LabelTop" FontSize="24" HorizontalAlignment="Center"/>
 		<StackPanel x:Name="FieldsPanel" WindowChrome.IsHitTestVisibleInChrome="True"/>
 		<DockPanel LastChildFill="False" WindowChrome.IsHitTestVisibleInChrome="True" Margin="0,20,0,0">

@@ -3,17 +3,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 
-using Maintance.DbModels;
-using Maintance.Services;
 using Maintance.TableAutomation.DbModelAttributes;
 using Maintance.TableAutomation.Models;
-using Maintance.TableAutomation.Tools;
 using Maintance.TableAutomation.Views;
 
 using Microsoft.EntityFrameworkCore;
@@ -208,9 +204,10 @@ namespace Maintance.TableAutomation
 				//_dbContext.ChangeTracker.Clear();
 				return true;
 			}
-			catch (Exception ex)
+			catch
 			{
-				_ims.SendException(ex);
+				foreach (var e in _dbContext.ChangeTracker.Entries()) e.State = EntityState.Unchanged;
+				_ims.SendError("Невозможно удалить, имеются зависимости!");
 				return false;
 			}
 			finally

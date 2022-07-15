@@ -7,19 +7,21 @@
 		xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
 		xmlns:exconv="clr-namespace:WPFCoreEx.Converters;assembly=WPFCoreEx"
         mc:Ignorable="d"
-		x:Name="Window"
-        Title="TableSelectionWindow" Width="500"
+		Name="TableSelectWindow"
+        Title="Shelter | Выбор" Width="500"
 		Background="{DynamicResource Gray1}"
 		SizeToContent="WidthAndHeight"
 		ShowInTaskbar="False"
-		MaxWidth="1000">
+		MaxWidth="1000"
+		WindowStartupLocation="CenterOwner"
+		>
 	<WindowChrome.WindowChrome>
 		<WindowChrome UseAeroCaptionButtons="False"
-					  CaptionHeight="{Binding ElementName=Window, Path=Height}"
+					  CaptionHeight="{Binding ElementName=TableSelectWindow, Path=Height}"
 					  ResizeBorderThickness="5"
 					  />
 	</WindowChrome.WindowChrome>
-	<StackPanel Orientation="Vertical" Margin="40" WindowChrome.IsHitTestVisibleInChrome="True">
+	<StackPanel Name="MainPanel" Orientation="Vertical" Margin="40" WindowChrome.IsHitTestVisibleInChrome="True">
 		<Label x:Name="LabelTop" FontSize="24" HorizontalAlignment="Center"/>
 		<DockPanel LastChildFill="True">
 			<Button Width="100" Content="Создать" DockPanel.Dock="Right" Click="CreateBtnClick"/>

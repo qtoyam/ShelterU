@@ -6,25 +6,25 @@ using System;
 namespace Maintance.DbModels
 {
 	[TableInfo("Клетки")]
-	public partial class Cage : IDBModel
+	public partial class Cage : IDBModelAnimalManager
 	{
 
-		[PropertyInfo(displayName: "", isAutofoFill: true, isOptional: false)]
-		[ViewColumn(isFilter: true, isGroup: true)]
+		[PropertyInfo(displayName: "Номер", isAutofoFill: true, isOptional: false)]
+		[ViewColumn(isFilter: true, isGroup: false)]
 		[SelectionColumn(isVisible: true, isFilter: true)]
 		public int NumberOfCage { get; set; }
 
-		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: true)]
-		[ViewColumn(isFilter: true, isGroup: true)]
+		[PropertyInfo(displayName: "Площадь", isAutofoFill: false, isOptional: true)]
+		[ViewColumn(isFilter: true, isGroup: false)]
 		[SelectionColumn(isVisible: true, isFilter: true)]
 		public decimal? Area { get; set; }
 
-		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: true)]
-		[ViewColumn(isFilter: true, isGroup: true)]
+		[PropertyInfo(displayName: "Животное", isAutofoFill: false, isOptional: true)]
+		[ViewColumn(isFilter: true, isGroup: false)]
 		[SelectionColumn(isVisible: true, isFilter: true)]
 		public virtual Animal? Animal { get; set; }
 
-		[PropertyInfo(displayName: "", isAutofoFill: false, isOptional: false)]
+		[PropertyInfo(displayName: "Род животного", isAutofoFill: false, isOptional: false)]
 		[ViewColumn(isFilter: true, isGroup: true)]
 		[SelectionColumn(isVisible: true, isFilter: true)]
 		public virtual Genus Genus { get; set; } = null!;
@@ -33,5 +33,7 @@ namespace Maintance.DbModels
         public int? AnimalId { get; set; }
         public int GenusId { get; set; }
 		#endregion //Hidden props
+
+		public override string ToString() => NumberOfCage.ToString();
 	}
 }

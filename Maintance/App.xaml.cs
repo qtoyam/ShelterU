@@ -11,7 +11,6 @@ using System.Windows;
 using System.Windows.Threading;
 
 using Maintance.DbModels;
-using Maintance.Services;
 using Maintance.TableAutomation;
 using Maintance.TableAutomation.Models;
 
@@ -19,6 +18,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 using Serilog;
+using Serilog.Core;
 
 using WPFCoreEx.Abstractions.Services;
 using WPFCoreEx.Services;
@@ -41,7 +41,7 @@ namespace Maintance
 			Log.Logger = new LoggerConfiguration()
 				.MinimumLevel.Verbose()
 				.WriteTo.Debug()
-				//.WriteTo.File(@"logs\log.txt")
+				.WriteTo.File(@"logs\log.txt")
 				.CreateLogger();
 
 		}
@@ -53,52 +53,49 @@ namespace Maintance
 
 		protected override void OnStartup(StartupEventArgs e)
 		{
-			var loginWin = new Views.LoginWindow();
-			loginWin.ShowDialog();
-			if (loginWin.Context == null)
+			try
 			{
-				Application.Current.Shutdown(4);
-				return;
-			}
-			if (loginWin.Role == null)
-			{
-				loginWin.Context.Dispose();
-				Application.Current.Shutdown(8);
-				return;
-			}
-			ServiceCollection services = new();
-			TableManagerSelector tms;
-			if (loginWin.Role.Contains("admin"))
-			{
-				tms = new(services, typeof(IDBModelAdmin));
-			}
-			else if (loginWin.Role.Contains("animal_worker"))
-			{
-				tms = new(services, typeof(IDBModel));
-			}
-			else
-			{
-				MessageBox.Show($"Неизвестная роль: {loginWin.Role}");
-				Application.Current.Shutdown(16);
-				return;
-			}
-			var context = loginWin.Context;
-			loginWin = null;
-			_serviceProvider = services
-				.AddSingleton<IMessageService, EventMessageService>()
-				.AddSingleton<MainWindow>()
-				.AddSingleton<SynchronizationContext>(new DispatcherSynchronizationContext(Application.Current.Dispatcher))
-				.AddSingleton<DbContext, ShelterContext>((s) => context)
-				.AddSingleton<SemaphoreSlim>((s) => new(1))
-				.BuildServiceProvider(
+				var loginWin = new Views.LoginWindow();
+				loginWin.ShowDialog();
+				if (loginWin.Context == null)
+				{
+					Application.Current?.Shutdown(4);
+					return;
+				}
+				if (loginWin.Role == null)
+				{
+					loginWin.Context.Dispose();
+					Application.Current.Shutdown(8);
+					return;
+				}
+				ServiceCollection services = new();
+				TableManagerSelector tms;
+				tms = new(services, loginWin.Role);
+				var context = loginWin.Context;
+				loginWin = null;
+				_serviceProvider = services
+					.AddSingleton<IMessageService, EventMessageService>()
+					.AddSingleton<MainWindow>()
+					.AddSingleton<SynchronizationContext>(new DispatcherSynchronizationContext(Application.Current.Dispatcher))
+					.AddSingleton<DbContext, ShelterContext>((s) => context)
+					.AddSingleton<SemaphoreSlim>((s) => new(1))
+					.BuildServiceProvider(
 #if DEBUG
 				new ServiceProviderOptions() { ValidateOnBuild = true, ValidateScopes = true }
 #endif
 				);
-			tms.EnableSelecting(_serviceProvider);
-			_serviceProvider.GetRequiredService<MainWindow>().Show();
-			Log.Debug("App started.");
-			base.OnStartup(e);
+				tms.EnableSelecting(_serviceProvider);
+				_serviceProvider.GetRequiredService<MainWindow>().Show();
+				Log.Debug("App started.");
+				base.OnStartup(e);
+			}
+			catch (Exception ex)
+			{
+				Log.Debug(ex.Message);
+				MessageBox.Show(ex.Message);
+				Application.Current?.Shutdown(-128);
+				return;
+			}
 		}
 
 		protected override void OnExit(ExitEventArgs e)

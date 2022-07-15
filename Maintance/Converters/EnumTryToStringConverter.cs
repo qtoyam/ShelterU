@@ -15,11 +15,11 @@ namespace Maintance.Converters
 		//TODO: slow unoptimized parasha if enum
 		public object Convert(object valueSource, Type targetType, object parameter, CultureInfo culture)
 		{
-			if (valueSource == null) return null;
+			if (valueSource == null) return null!;
 			var t = valueSource.GetType();
 			if (t.IsEnum)
 			{
-				return t.GetField(valueSource.ToString())
+				return t.GetField(valueSource.ToString()!)!
 					.GetCustomAttributes(typeof(DescriptionAttribute), false)
 					.Cast<DescriptionAttribute>()
 					.Single()

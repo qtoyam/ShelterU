@@ -14,7 +14,6 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 using Maintance.DbModels;
-using Maintance.Services;
 using Maintance.TableAutomation;
 using Maintance.TableAutomation.Views;
 using Maintance.Views;
@@ -35,16 +34,17 @@ namespace Maintance
 	{
 		private readonly EventMessageService _ems;
 		private readonly TableManagerSelector _tableManagerSelector;
-		private readonly DbContext sc;
+		private readonly ShelterContext _sc;
 
 		public MainWindow(IMessageService ims, TableManagerSelector tableManagerSelector, DbContext sc)
 		{
 			InitializeComponent();
 			_ems = (EventMessageService)ims;
 			_tableManagerSelector = tableManagerSelector;
-			this.sc = sc;
+			_sc = (ShelterContext)sc;
+			this.TitleTb.Text = $"Shelter | {_sc._username}";
 			_ems.RegisterAllDefault(this);
-			Navigation_list.ItemsSource = _tableManagerSelector.TableNames.Select(x=>new NavigationItem(x, 
+			Navigation_list.ItemsSource = _tableManagerSelector.TableNames.Select(x => new NavigationItem(x,
 				Application.Current.TryFindResource(x) as DrawingImage));
 		}
 
@@ -76,7 +76,27 @@ namespace Maintance
 
 		private void Image_MouseDown(object sender, MouseButtonEventArgs e)
 		{
-			new ChangePasswordWindow((ShelterContext)sc).ShowDialog();
+			new ChangePasswordWindow(_sc) { Owner = this }.ShowDialog();
+		}
+
+		private void TitleTb_MouseDown(object sender, MouseButtonEventArgs e)
+		{
+			_ems.SendMessage(
+				@"Лиза, я лишь хочу признаваться тебе,
+						Что я с детства влюблен, дать тепло батарей.
+						Холод осени с Лизой заменим весной;
+						Майский парк на скамейках - сидим мы с тобой.
+						Она мне говорит, как отлично, что я
+						Ей сказал, что взаимности толком не ждал;
+						Просто у меня есть уже план в голове,
+						Ведь с четвертого класса я думал о ней!
+						Лиза, ты будешь моей!
+						Лиза - май среди январей!
+						Лиза, я лишь хочу признаваться тебе,
+						Что я с детства влюблен, дать тепло батарей.
+						Холод осени с Лизой заменим весной;
+						Майский парк на скамейках - сидим мы с тобой;
+						Сидим мы с тобой.");
 		}
 	}
 }
